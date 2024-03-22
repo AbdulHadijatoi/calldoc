@@ -27,12 +27,6 @@
                             <a href="{{url('/all-pharmacies')}}" class="text-white text-sm font-normal leading-4 font-fira-sans pt-2">{{__('Pharmacy')}}</a>
                         </div>
                         <div class="mt-2">
-                            <a href="{{url('/all-labs')}}" class="text-white text-sm font-normal leading-4 font-fira-sans pt-2">{{__('Lab Tests')}}</a>
-                        </div>
-                        <div class="mt-2">
-                            <a href="{{url('/our-offers')}}" class="text-white text-sm font-normal leading-4 font-fira-sans pt-2">{{__('Offers')}}</a>
-                        </div>
-                        <div class="mt-2">
                             <a href="{{url('/our_blogs')}}" class="text-white text-sm font-normal leading-4 font-fira-sans pt-2">{{__('Blog')}}</a>
                         </div>
                     </div>
