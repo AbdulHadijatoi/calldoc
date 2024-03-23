@@ -654,7 +654,7 @@
 
                                 <div class="form-group">
                                     <label class="col-form-label">{{__('Play Store URL')}}</label>
-                                    <input type="url" name="playstore" required class="form-control @error('playstore') is-invalid @enderror" value="{{ $setting->playstore }}">
+                                    <input type="url" name="playstore" class="form-control @error('playstore') is-invalid @enderror" value="{{ $setting->playstore }}">
                                     @error('playstore')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
@@ -662,7 +662,7 @@
 
                                 <div class="form-group">
                                     <label class="col-form-label">{{__('App Store URL')}}</label>
-                                    <input type="url" name="appstore" required class="form-control @error('appstore') is-invalid @enderror" value="{{ $setting->appstore }}">
+                                    <input type="url" name="appstore" class="form-control @error('appstore') is-invalid @enderror" value="{{ $setting->appstore }}">
                                     @error('appstore')
                                     <div class="invalid-feedback"> {{ $message }}</div>
                                     @enderror
@@ -670,7 +670,7 @@
 
                                 <div class="form-group">
                                     <label class="col-form-label">{{__('Facebook url')}}</label>
-                                    <input type="url" name="facebook_url" required class="form-control @error('facebook_url') is-invalid @enderror" value="{{ $setting->facebook_url }}">
+                                    <input type="url" name="facebook_url" class="form-control @error('facebook_url') is-invalid @enderror" value="{{ $setting->facebook_url }}">
                                     @error('facebook_url')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
@@ -678,7 +678,7 @@
 
                                 <div class="form-group">
                                     <label class="col-form-label">{{__('Twitter url')}}</label>
-                                    <input type="url" name="twitter_url" required class="form-control @error('twitter_url') is-invalid @enderror" value="{{ $setting->twitter_url }}">
+                                    <input type="url" name="twitter_url" class="form-control @error('twitter_url') is-invalid @enderror" value="{{ $setting->twitter_url }}">
                                     @error('twitter_url')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
@@ -686,7 +686,7 @@
 
                                 <div class="form-group">
                                     <label class="col-form-label">{{__('Instagram url')}}</label>
-                                    <input type="url" name="instagram_url" required class="form-control @error('instagram_url') is-invalid @enderror" value="{{ $setting->instagram_url }}">
+                                    <input type="url" name="instagram_url" class="form-control @error('instagram_url') is-invalid @enderror" value="{{ $setting->instagram_url }}">
                                     @error('instagram_url')
                                     <div class="invalid-feedback"> {{ $message }} </div>
                                     @enderror
@@ -694,7 +694,7 @@
 
                                 <div class="form-group">
                                     <label class="col-form-label">{{__('Linkdin url')}}</label>
-                                    <input type="url" name="linkdin_url" required class="form-control @error('linkdin_url') is-invalid @enderror" value="{{ $setting->linkdin_url }}">
+                                    <input type="url" name="linkdin_url" class="form-control @error('linkdin_url') is-invalid @enderror" value="{{ $setting->linkdin_url }}">
                                     @error('linkdin_url')
                                     <div class="invalid-feedback"> {{ $message }}</div>
                                     @enderror

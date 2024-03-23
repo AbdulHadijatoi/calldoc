@@ -230,48 +230,7 @@
         @endif
     </div> -->
 
-    {{-- Browse by Specialities--}}
-    <div class="p-5 w-full mb-10" style="background-color: aliceblue;">
-        <div class="xl:w-3/4 mx-auto pt-20 pb-20">
-            <div class="grid xlg:grid-cols-4 lg:grid-cols-3 md:grid-cols-3 sm:grid-cols-2 msm:grid-cols-1 xsm:grid-cols-1 xxsm:grid-cols-1">
-                <div class="sm:col-span-2 msm:col-span-1 xsm:col-span-1 xxsm:col-span-1 ">
-                    @if(isset($setting->home_content) || isset($setting->home_content_desc))
-                    <div class="justify-center items-left md:mt-12 lg:mt-16 sm:mt-11 msm:mt-11 xsm:mt-11 xxsm:mt-11">
-                        <h2 class="font-medium 2xl:text-4xl xl:text-4xl xlg:text-4xl lg:text-4xl xmd:text-4xl md:text-4xl msm:text-4xl sm:text-4xl xsm:text-4xl xxsm:text-2xl leading-10 font-fira-sans text-black ">
-                            {{ $setting->home_content}}
-                        </h2>
-                        <p class="font-normal leading-5 text-sm text-gray text-left lg:mt-4 xmd:mt-4 md:mt-4 sm:pt-3 msm:pt-3 xsm:pt-3 xxsm:pt-3 ">{!! $setting->home_content_desc !!}</p>
-                    </div>
-                    @else
-                    <div class="flex justify-center mt-44 font-fira-sans font-normal text-base text-gray">{{__('No Data Available')}}</div>
-                    @endif
-                </div>
-                @if(count($treatments) > 0)
-                @foreach($treatments as $treatment)
-                <div class="bg-white shadow-xl p-14 transform w-full h-full hover:bg-white-50 transition duration-500 hover:scale-110 xxsm:mt-10 2xl:mt-0">
-                    <div class="justify-center items-center w-full">
-                        <img class="lg:h-16 lg:w-16 xxmd:w-16 xxmd:h-16 md:h-10 md:w-10 sm:h-10 sm:w-10 msm:h-10 msm:w-10 xsm:h-10 xsm:w-10 xxsm:h-10 xxsm:w-10 mx-auto  bg-cover object-cover" src="{{$treatment->fullImage}}" alt="" />
-                        <p class="font-fira-sans font-normal text-xl xxsm:text-base leading-6 text-black text-center md:text-xl py-5">{{$treatment->name}}</p>
-                        <p class="font-fira-sans text-center md:text-xl">
-                        <form action="{{ url('show-doctors') }}" method="post" class="text-center">
-                            @csrf
-                            <input type="hidden" name="treatment_id" value="{{ $treatment->id }}">
-                            <button type="submit" class="font-medium leading-4 text-sm text-primary text-center font-fira-sans md:text-sm">{{__('Consult Now!')}}
-                                <svg width="11" height="11" viewBox="0 0 11 11" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M8.73544 0.852912C8.6542 0.446742 8.25908 0.183329 7.85291 0.264563L1.23399 1.58835C0.827824 1.66958 0.564411 2.0647 0.645646 2.47087C0.72688 2.87704 1.122 3.14045 1.52817 3.05922L7.41165 1.88252L8.58835 7.76601C8.66958 8.17218 9.0647 8.43559 9.47087 8.35435C9.87704 8.27312 10.1405 7.878 10.0592 7.47183L8.73544 0.852912ZM2.62404 10.416L8.62404 1.41602L7.37596 0.583973L1.37596 9.58397L2.62404 10.416Z" />
-                                </svg>
-                            </button>
-                        </form>
-                        </p>
-                    </div>
-                </div>
-                @endforeach
-                @else
-                <div class="flex justify-center mt-44 font-fira-sans font-normal text-base text-gray">{{__('No Data Available')}}</div>
-                @endif
-            </div>
-        </div>
-    </div>
+    
 
     {{-- Read top articles from health experts --}}
     <div class="py-10 xl:w-3/4 mx-auto 2xl:mb-20">

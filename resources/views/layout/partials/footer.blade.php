@@ -11,10 +11,18 @@
                         @endif
                     </a>
                     <div class="flex pt-5">
+                        @if ($setting->facebook_url && $setting->facebook_url != '')
                         <a href="{{ $setting->facebook_url }}" target="_blank" class=""><i class="fa-brands fa-facebook text-white border rounded-full p-2"></i></a>
+                        @endif
+                        @if ($setting->twitter_url && $setting->twitter_url != '')
                         <a href="{{ $setting->twitter_url }}" target="_blank" class="lg:mx-4 md:mx-2 xsm:mx-1 xxsm:mx-1"><i class="fa-brands fa-twitter text-white border rounded-full p-2"></i></a>
+                        @endif
+                        @if ($setting->instagram_url && $setting->instagram_url != '')
                         <a href="{{ $setting->instagram_url }}" target="_blank" class=""><i class="fa-brands fa-instagram text-white border rounded-full p-2"></i></a>
+                        @endif
+                        @if ($setting->linkdin_url && $setting->linkdin_url != '')
                         <a href="{{ $setting->linkdin_url }}" target="_blank" class="lg:mx-4 md:mx-2 xsm:mx-1 xxsm:mx-1"><i class="fa-brands fa-linkedin-in text-white border rounded-full p-2"></i></a>
+                        @endif
                     </div>
                 </div>
                 <div class="grid msm:grid-cols-2 gap-10 xsm:grid-cols-1 xxsm:grid-cols-1 mb-5">

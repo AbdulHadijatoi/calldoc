@@ -34,10 +34,12 @@ use App\Http\Controllers\SuperAdmin\UserController;
 use App\Http\Controllers\SuperAdmin\InsurerController;
 use App\Http\Controllers\UserApiController;
 use App\Http\Controllers\Website\WebsiteController;
+use App\Mail\TestMail;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -51,7 +53,11 @@ use Illuminate\Support\Facades\Route;
 |
 */
 Auth::routes();
-
+Route::get('/send-test-email', function () {
+    Mail::to('abdulhadijatoi@gmail.com')->send(new TestMail('test1','test2','test3'));
+    
+    return "Test email sent successfully";
+});
 // Route::get('installer',[AdminController::class,'installer']);
 Route::any('installer',[AdminController::class,'installer']);
 

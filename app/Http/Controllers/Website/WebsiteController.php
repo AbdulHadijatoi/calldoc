@@ -1105,8 +1105,8 @@ class WebsiteController extends Controller
     
     public function termsAndConditions()
     {
-        $aboutUs = Setting::first()->about_us;
-        return view('website.about', compact('aboutUs'));
+        $terms = Setting::first()->terms;
+        return view('website.terms', compact('terms'));
     }
 
     public function privacy()
@@ -1251,6 +1251,7 @@ class WebsiteController extends Controller
         $setting = Setting::first();
         if ($user) {
             $notification_template = NotificationTemplate::where('title', 'forgot password')->first();
+
             $password = rand(1000000000, 9999999999);
             $detail['user_name'] = $user->name;
             $detail['password'] = $password;
@@ -1259,6 +1260,7 @@ class WebsiteController extends Controller
             $user->password = Hash::make($password);
             $user->save();
             $message1 = str_replace($data, $detail, $notification_template->mail_content);
+            
             try {
                 $config = array(
                     'driver'     => $setting->mail_mailer,
@@ -1269,6 +1271,7 @@ class WebsiteController extends Controller
                     'username'   => $setting->mail_username,
                     'password'   => $setting->mail_password
                 );
+                // return $config;
                 Config::set('mail', $config);
                 Mail::to($user->email)->send(new SendMail($message1, $notification_template->subject));
             } catch (\Throwable $e) {
