@@ -35,12 +35,14 @@ use App\Http\Controllers\SuperAdmin\InsurerController;
 use App\Http\Controllers\UserApiController;
 use App\Http\Controllers\Website\WebsiteController;
 use App\Mail\TestMail;
+use App\Models\Setting;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
+use Twilio\Rest\Client;
 
 /*
 |--------------------------------------------------------------------------
@@ -60,6 +62,84 @@ Route::get('/send-test-email', function () {
 });
 // Route::get('installer',[AdminController::class,'installer']);
 Route::any('installer',[AdminController::class,'installer']);
+
+Route::get('testroute2', function () {
+    // Get Twilio settings from database
+    $setting = Setting::first();
+
+    // Twilio credentials
+    $sid = $setting->twilio_acc_id;
+    $token = $setting->twilio_auth_token;
+    
+    try {
+        // Phone number to send the message (in WhatsApp format)
+        $phone = 'whatsapp:' . '+212766635027'; // Update with recipient's phone number
+
+        // Message content
+        $data = '{{data_placeholder}}'; // Placeholder in your message content
+        $detail = 'Sample Detail'; // Data to replace the placeholder
+        $msg_content = 'Test from Hadi, Hello {{data_placeholder}}, This is a test message.'; // Your message template
+
+        // Replace placeholder with detail
+        $message1 = str_replace($data, $detail, $msg_content);
+
+        // Initialize Twilio client
+        $client = new Client($sid, $token);
+
+        // Send message
+        return $client->messages->create(
+            $phone,
+            array(
+                'from' => 'whatsapp:' . $setting->twilio_phone_no, // Twilio WhatsApp phone number
+                'body' => $message1 // Message content
+            )
+        );
+    } catch (\Throwable $th) {
+        // Handle exceptions
+        // For example, log the error
+        \Log::error($th->getMessage());
+    }
+});
+
+
+Route::get('testroute', function () {
+    // Get Twilio settings from database
+    $setting = Setting::first();
+
+    // Twilio credentials
+    $sid = $setting->twilio_acc_id;
+    $token = $setting->twilio_auth_token;
+    
+    try {
+        // Phone number to send the message
+        $phone = '+212766635027'; // Update with recipient's phone number
+
+        // Message content
+        $data = '{{data_placeholder}}'; // Placeholder in your message content
+        $detail = 'Sample Detail'; // Data to replace the placeholder
+        $msg_content = 'Test from Hadi, Hello {{data_placeholder}}, This is a test message.'; // Your message template
+
+        // Replace placeholder with detail
+        $message1 = str_replace($data, $detail, $msg_content);
+
+        // Initialize Twilio client
+        $client = new Client($sid, $token);
+
+        // Send message
+        return $client->messages->create(
+            $phone,
+            array(
+                'from' => $setting->twilio_phone_no, // Twilio phone number
+                'body' => $message1 // Message content
+            )
+        );
+    } catch (\Throwable $th) {
+        // Handle exceptions
+        // For example, log the error
+        \Log::error($th->getMessage());
+    }
+});
+
 
 Route::get('/spatie-cache-clear',function ()
 {

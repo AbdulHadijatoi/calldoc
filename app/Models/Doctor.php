@@ -44,6 +44,11 @@ class Doctor extends Model
     {
         return $this->hasOne('App\Models\Doctor');
     }
+    
+    public function user()
+    {
+        return $this->belongsTo(User::class,'user_id');
+    }
 
     public function getRateAttribute()
     {

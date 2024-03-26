@@ -41,6 +41,7 @@ use App\Models\Report;
 use App\Models\User;
 use App\Models\UserAddress;
 use App\Models\Insurer;
+use App\Services\TwilioService;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -53,6 +54,12 @@ use Spatie\Permission\Models\Role;
 
 class WebsiteController extends Controller
 {
+    protected $twilioService;
+
+    public function __construct() {
+        $this->twilioService = new TwilioService();
+    }
+    
     public function index()
     {
         if (env('DB_DATABASE') == "") {
@@ -726,9 +733,33 @@ class WebsiteController extends Controller
             return $a !== "";
         });
         $appointment = Appointment::create($data);
-        // session()->forget('doctor_id');
-        // session()->forget('time');
-        // session()->forget('date');
+
+        $setting = Setting::first();
+        // doctor booked appointment
+        $doc_notification_template = NotificationTemplate::where('title','doctor book appointment')->first();
+        $doc_msg_content = $doc_notification_template->msg_content;
+        $detail1['doctor_name'] = $doctor->name;
+        $detail1['appointment_id'] = $appointment->appointment_id;
+        $detail1['date'] = $appointment->date;
+        $detail1['user_name'] = auth()->user()->name;
+        $detail1['app_name'] = $setting->business_name;
+        $doctor_data = ["{{doctor_name}}","{{appointment_id}}","{{date}}","{{user_name}}","{{app_name}}"];
+        $doc_message = str_replace($doctor_data, $detail1, $doc_msg_content);
+
+        $this->twilioService->sendWhatsAppNotification($doctor->user->phone,$doc_message);
+
+        // create Appointment to user
+        $user_notification_template = NotificationTemplate::where('title','create appointment')->first();
+        $msg_content = $user_notification_template->msg_content;
+        $detail['user_name'] = auth()->user()->name;
+        $detail['appointment_id'] = $appointment->appointment_id;
+        $detail['date'] = $appointment->date;
+        $detail['time'] = $appointment->time;
+        $detail['app_name'] = $setting->business_name;
+        $user_data = ["{{user_name}}","{{appointment_id}}","{{date}}","{{time}}","{{app_name}}"];
+        $user_message = str_replace($user_data, $detail, $msg_content);
+        $this->twilioService->sendWhatsAppNotification($request->phone_no,$user_message);
+
         return response(['success' => true]);
     }
 
@@ -1314,9 +1345,23 @@ class WebsiteController extends Controller
     public function cancelAppointment(Request $request)
     {
         $data = $request->all();
-        $id = Appointment::find($data['id']);
+        $appointment = Appointment::find($data['id']);
         $data['appointment_status'] = 'cancel';
-        $id->update($data);
+        $appointment->update($data);
+
+        $user = $appointment->user;
+        if($user){
+            $notification_template = NotificationTemplate::where('title', 'status change')->first();
+            $setting = Setting::first();
+            $detail['user_name'] = $user->name;
+            $detail['appointment_id'] = $appointment->appointment_id;
+            $detail['status'] = 'canceled';
+            $detail['date'] = Carbon::now(env('timezone'))->format('Y-m-d');
+            $detail['app_name'] = $setting->business_name;
+            $data = ["{{user_name}}", "{{appointment_id}}", "{{status}}", "{{date}}", "{{app_name}}"];
+            $msg1 = str_replace($data, $detail, $notification_template->msg_content);
+            $this->twilioService->sendWhatsAppNotification($appointment->phone_no,$msg1);
+        }
         return response(['success' => true]);
     }
 
