@@ -35,6 +35,7 @@ use App\Http\Controllers\SuperAdmin\InsurerController;
 use App\Http\Controllers\UserApiController;
 use App\Http\Controllers\Website\WebsiteController;
 use App\Mail\TestMail;
+use App\Models\NotificationTemplate;
 use App\Models\Setting;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
@@ -64,6 +65,17 @@ Route::get('/send-test-email', function () {
 Route::any('installer',[AdminController::class,'installer']);
 
 Route::get('testroute2', function () {
+    $user_notification_template = NotificationTemplate::where('title','create appointment')->first();
+    $msg_content = $user_notification_template->msg_content;
+    $detail['patient_name'] = "Auth";
+    $detail['appo_date'] = "DATE";
+    $detail['appo_time'] = "TIME";
+    $detail['doctor_name'] = "DRNAME";
+    $detail['chamber_address'] = "DR ADDRESS";
+    $detail['doctor_number'] = "DRNO";
+    $user_data = ["{{patient_name}}", "{{appo_date}}", "{{appo_time}}", "{{doctor_name}}", "{{chamber_address}}", "{{doctor_number}}"];
+    $user_message = str_replace($user_data, $detail, $msg_content);
+    return $user_message;
     // Get Twilio settings from database
     $setting = Setting::first();
 
@@ -102,43 +114,43 @@ Route::get('testroute2', function () {
 });
 
 
-Route::get('testroute', function () {
-    // Get Twilio settings from database
-    $setting = Setting::first();
+// Route::get('testroute', function () {
+//     // Get Twilio settings from database
+//     $setting = Setting::first();
 
-    // Twilio credentials
-    $sid = $setting->twilio_acc_id;
-    $token = $setting->twilio_auth_token;
+//     // Twilio credentials
+//     $sid = $setting->twilio_acc_id;
+//     $token = $setting->twilio_auth_token;
     
-    try {
-        // Phone number to send the message
-        $phone = '+212766635027'; // Update with recipient's phone number
+//     try {
+//         // Phone number to send the message
+//         $phone = '+212766635027'; // Update with recipient's phone number
 
-        // Message content
-        $data = '{{data_placeholder}}'; // Placeholder in your message content
-        $detail = 'Sample Detail'; // Data to replace the placeholder
-        $msg_content = 'Test from Hadi, Hello {{data_placeholder}}, This is a test message.'; // Your message template
+//         // Message content
+//         $data = '{{data_placeholder}}'; // Placeholder in your message content
+//         $detail = 'Sample Detail'; // Data to replace the placeholder
+//         $msg_content = 'Test from Hadi, Hello {{data_placeholder}}, This is a test message.'; // Your message template
 
-        // Replace placeholder with detail
-        $message1 = str_replace($data, $detail, $msg_content);
+//         // Replace placeholder with detail
+//         $message1 = str_replace($data, $detail, $msg_content);
 
-        // Initialize Twilio client
-        $client = new Client($sid, $token);
+//         // Initialize Twilio client
+//         $client = new Client($sid, $token);
 
-        // Send message
-        return $client->messages->create(
-            $phone,
-            array(
-                'from' => $setting->twilio_phone_no, // Twilio phone number
-                'body' => $message1 // Message content
-            )
-        );
-    } catch (\Throwable $th) {
-        // Handle exceptions
-        // For example, log the error
-        \Log::error($th->getMessage());
-    }
-});
+//         // Send message
+//         return $client->messages->create(
+//             $phone,
+//             array(
+//                 'from' => $setting->twilio_phone_no, // Twilio phone number
+//                 'body' => $message1 // Message content
+//             )
+//         );
+//     } catch (\Throwable $th) {
+//         // Handle exceptions
+//         // For example, log the error
+//         \Log::error($th->getMessage());
+//     }
+// });
 
 
 Route::get('/spatie-cache-clear',function ()

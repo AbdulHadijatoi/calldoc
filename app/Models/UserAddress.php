@@ -17,4 +17,9 @@ class UserAddress extends Model
     {
         return $this->hasOne('App\Models\UserAddress');
     }
+    
+    public function user()
+    {
+        return $this->belongsTo(User::class,'user_id');
+    }
 }

@@ -734,31 +734,23 @@ class WebsiteController extends Controller
         });
         $appointment = Appointment::create($data);
 
-        $setting = Setting::first();
         // doctor booked appointment
-        $doc_notification_template = NotificationTemplate::where('title','doctor book appointment')->first();
-        $doc_msg_content = $doc_notification_template->msg_content;
-        $detail1['doctor_name'] = $doctor->name;
-        $detail1['appointment_id'] = $appointment->appointment_id;
-        $detail1['date'] = $appointment->date;
-        $detail1['user_name'] = auth()->user()->name;
-        $detail1['app_name'] = $setting->business_name;
-        $doctor_data = ["{{doctor_name}}","{{appointment_id}}","{{date}}","{{user_name}}","{{app_name}}"];
-        $doc_message = str_replace($doctor_data, $detail1, $doc_msg_content);
-
-        $this->twilioService->sendWhatsAppNotification($doctor->user->phone,$doc_message);
+        $this->twilioService->sendContentTemplate($doctor->user->phone,"HX3054ec7a83a0b9e3034dca7d4c0b7ade",[
+            "doctor_name" => $doctor->name,
+            "appo_date" => $appointment->date,
+            "appo_time" => $appointment->time,
+            "patient_name" => auth()->user()->name,
+        ]);
 
         // create Appointment to user
-        $user_notification_template = NotificationTemplate::where('title','create appointment')->first();
-        $msg_content = $user_notification_template->msg_content;
-        $detail['user_name'] = auth()->user()->name;
-        $detail['appointment_id'] = $appointment->appointment_id;
-        $detail['date'] = $appointment->date;
-        $detail['time'] = $appointment->time;
-        $detail['app_name'] = $setting->business_name;
-        $user_data = ["{{user_name}}","{{appointment_id}}","{{date}}","{{time}}","{{app_name}}"];
-        $user_message = str_replace($user_data, $detail, $msg_content);
-        $this->twilioService->sendWhatsAppNotification($request->phone_no,$user_message);
+        $this->twilioService->sendContentTemplate($request->phone_no,'HX4ca203d70aca75f1853919c55fe20347',[
+            "patient_name" => auth()->user()->name,
+            "appo_date" => $appointment->date,
+            "appo_time" => $appointment->time,
+            "doctor_name" => $appointment->doctor->name,
+            "chamber_address" => $appointment->doctor && $appointment->doctor->user && $appointment->doctor->user->userAddress ?$appointment->doctor->user->userAddress->address:'',
+            "doctor_number" => $appointment->doctor->user->phone,
+        ]);
 
         return response(['success' => true]);
     }
@@ -1352,13 +1344,15 @@ class WebsiteController extends Controller
         $user = $appointment->user;
         if($user){
             $notification_template = NotificationTemplate::where('title', 'status change')->first();
-            $setting = Setting::first();
-            $detail['user_name'] = $user->name;
-            $detail['appointment_id'] = $appointment->appointment_id;
-            $detail['status'] = 'canceled';
-            $detail['date'] = Carbon::now(env('timezone'))->format('Y-m-d');
-            $detail['app_name'] = $setting->business_name;
-            $data = ["{{user_name}}", "{{appointment_id}}", "{{status}}", "{{date}}", "{{app_name}}"];
+
+            $detail['patient_name'] = auth()->user()->name;
+            $detail['appo_date'] = Carbon::now(env('timezone'))->format('Y-m-d');
+            $detail['appo_time'] = Carbon::now(env('timezone'))->format('H:i:s');
+            $detail['doctor_name'] = $appointment->doctor->name;
+            $detail['chamber_address'] = $appointment->doctor && $appointment->doctor->user && $appointment->doctor->user->userAddress ?$appointment->doctor->user->userAddress->address:'';
+            $detail['doctor_number'] = $appointment->doctor->user->phone;
+            $data = ["{{patient_name}}", "{{appo_date}}", "{{appo_time}}", "{{doctor_name}}", "{{chamber_address}}", "{{doctor_number}}"];
+
             $msg1 = str_replace($data, $detail, $notification_template->msg_content);
             $this->twilioService->sendWhatsAppNotification($appointment->phone_no,$msg1);
         }
