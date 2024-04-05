@@ -433,7 +433,7 @@ Route::group(['middleware' => ['XssSanitizer']], function ()
         Route::post('show_settalement',[AppointmentController::class,'show_settlement']);
 
         Route::get('acceptAppointment/{appointment_id}',[AppointmentController::class,'acceptAppointment']);
-        Route::post('cancelAppointment/{appointment_id}',[AppointmentController::class,'cancelAppointment']);
+        Route::get('cancelAppointment/{appointment_id}',[AppointmentController::class,'cancelAppointment']);
         Route::get('completeAppointment/{appointment_id}',[AppointmentController::class,'completeAppointment']);
 
         // doctor review

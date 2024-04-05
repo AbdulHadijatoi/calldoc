@@ -25,6 +25,7 @@ use App\Models\NotificationTemplate;
 use App\Models\Notification;
 use App\Models\UserAddress;
 use App\Models\WorkingHour;
+use App\Services\TwilioService;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
@@ -32,6 +33,12 @@ use Illuminate\Support\Facades\Session;
 
 class AppointmentController extends Controller
 {
+    protected $twilioService;
+
+    public function __construct() {
+        $this->twilioService = new TwilioService();
+    }
+    
     public function calendar()
     {
         abort_if(Gate::denies('appointment_calendar_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
@@ -127,15 +134,61 @@ class AppointmentController extends Controller
 
     public function acceptAppointment($appointment_id)
     {
-        Appointment::find($appointment_id)->update(['appointment_status' => 'approve']);
-        $this->notificationChange($appointment_id,'Accept');
+        $appointment = Appointment::find($appointment_id);
+        $appointment->update(['appointment_status' => 'approve']);
+        // $this->notificationChange($appointment_id,'Accept');
+        $user = $appointment->user;
+        $doctor = $appointment->doctor;
+        $doctorAddress = $doctor->user->userAddress;
+            
+        if($doctorAddress && $user){
+            $lat = $doctorAddress->lat;
+            $long = $doctorAddress->lang;
+            $google_map_url = "https://www.google.com/maps?q=$lat,$long";
+            
+            $this->twilioService->sendContentTemplate($user->phone,'HX98adc0156425cced35ee51de2285465a',[
+                "1" => auth()->user()->name,
+                "2" => $appointment->date,
+                "3" => $appointment->time,
+                "4" => $appointment->doctor->name,
+                "5" => $doctor->user && $doctor->user->userAddress ?$doctor->user->userAddress->address:'',
+                "6" => $appointment->doctor->user->phone,
+                "7" => $google_map_url,
+            ]);
+        }
+
+        // ONLY WHEN ($appointment->is_from == 0) THEN SEND NOTIFICATION TO DOCTOR
+        if($appointment->is_from == 0){
+            $this->twilioService->sendContentTemplate($doctor->user->phone,"HXb58ab4662e8c9824ff9dd50fa84b1dd7", [
+                "1" => $doctor->name,
+                "2" => $appointment->id,
+                "3" => $appointment->date,
+                "4" => $appointment->time,
+                "5" => auth()->user()->name,
+                "6" => auth()->user()->phone,
+            ]);
+        }
+
         return redirect()->back()->with('status',__('status change successfully...!!'));
     }
 
     public function cancelAppointment($appointment_id)
     {
-        Appointment::find($appointment_id)->update(['appointment_status' => 'cancel']);
-        $this->notificationChange($appointment_id,'Cancel');
+        $appointment = Appointment::find($appointment_id);
+        $appointment->update(['appointment_status' => 'cancel']);
+
+        // Cancel Appointment to patient from DOCTOR
+        $user = $appointment->user;
+        if($user){
+            $this->twilioService->sendContentTemplate($user->phone,'HX0ba3274473ee4eb9ca629b66ad636039',[
+                "1" => $user->name,
+                "2" => $appointment->date,
+                "3" => $appointment->time,
+                "4" => $appointment->doctor->name,
+                "5" => $appointment->doctor && $appointment->doctor->user && $appointment->doctor->user->userAddress ?$appointment->doctor->user->userAddress->address:'',
+                "6" => $appointment->doctor->user->phone,
+            ]);
+        }
         return redirect()->back()->with('status',__('status change successfully...!!'));
     }
 
@@ -155,7 +208,8 @@ class AppointmentController extends Controller
             $settle['doctor_status'] = 0;
             Settle::create($settle);
         }
-        $this->notificationChange($appointment_id,'Complete');
+        // $this->notificationChange($appointment_id,'Complete');
+        
         return redirect()->back()->with('status',__('status change successfully...!!'));
     }
 
@@ -450,6 +504,26 @@ class AppointmentController extends Controller
         $data['payment_type'] = $appointment->payment_type;
         $data = array_filter($data, function($a) {return $a !== "";});
         $appointment->update($data);
+
+        // UPDATE APPOINTMENT FROM DOCTOR TO PATIENT
+        $user = $appointment->user;
+        $doctor = $appointment->doctor;
+        $doctorAddress = $doctor->user->userAddress;
+        if($doctorAddress && $user){
+            $lat = $doctorAddress->lat;
+            $long = $doctorAddress->lang;
+            $google_map_url = "https://www.google.com/maps?q=$lat,$long";
+            $this->twilioService->sendContentTemplate($request->phone_no,'HX9d3acc90ddfe9185394ac540873faac4',[
+                "1" => auth()->user()->name,
+                "2" => $appointment->date,
+                "3" => $appointment->time,
+                "4" => $appointment->doctor->name,
+                "5" => $appointment->doctor && $appointment->doctor->user && $appointment->doctor->user->userAddress ?$appointment->doctor->user->userAddress->address:'',
+                "6" => $appointment->doctor->user->phone,
+                "7" => $google_map_url,
+            ]);
+        }
+
         return redirect('appointment')->with('status',__('Appointment Update successfully...!!'));
     }
 

@@ -688,10 +688,9 @@ class WebsiteController extends Controller
     }
 
     // BookAppointment
-    public function bookAppointment(Request $request)
-    {
+    public function bookAppointment(Request $request) {
         $data = $request->all();
-        // return $data;
+
         $request->validate([
             'appointment_for' => 'bail|required',
             'illness_information' => 'bail|required',
@@ -735,22 +734,31 @@ class WebsiteController extends Controller
         $appointment = Appointment::create($data);
 
         // doctor booked appointment
-        $this->twilioService->sendContentTemplate($doctor->user->phone,"HX3054ec7a83a0b9e3034dca7d4c0b7ade",[
-            "doctor_name" => $doctor->name,
-            "appo_date" => $appointment->date,
-            "appo_time" => $appointment->time,
-            "patient_name" => auth()->user()->name,
-        ]);
+        // $this->twilioService->sendContentTemplate($doctor->user->phone,"HXb58ab4662e8c9824ff9dd50fa84b1dd7",[
+        //     "1" => $doctor->name,
+        //     "2" => $appointment->id,
+        //     "3" => $appointment->date,
+        //     "4" => $appointment->time,
+        //     "5" => auth()->user()->name,
+        //     "6" => auth()->user()->phone,
+        // ]);
 
-        // create Appointment to user
-        $this->twilioService->sendContentTemplate($request->phone_no,'HX4ca203d70aca75f1853919c55fe20347',[
-            "patient_name" => auth()->user()->name,
-            "appo_date" => $appointment->date,
-            "appo_time" => $appointment->time,
-            "doctor_name" => $appointment->doctor->name,
-            "chamber_address" => $appointment->doctor && $appointment->doctor->user && $appointment->doctor->user->userAddress ?$appointment->doctor->user->userAddress->address:'',
-            "doctor_number" => $appointment->doctor->user->phone,
-        ]);
+        // $doctorAddress = $doctor->user->userAddress;
+        // if($doctorAddress){
+        //     $lat = $doctorAddress->lat;
+        //     $long = $doctorAddress->lang;
+        //     $google_map_url = "https://www.google.com/maps?q=$lat,$long";
+        //     // create Appointment to user
+        //     $this->twilioService->sendContentTemplate($request->phone_no,'HX98adc0156425cced35ee51de2285465a',[
+        //         "1" => auth()->user()->name,
+        //         "2" => $appointment->date,
+        //         "3" => $appointment->time,
+        //         "4" => $appointment->doctor->name,
+        //         "5" => $doctor->user && $doctor->user->userAddress ?$doctor->user->userAddress->address:'',
+        //         "6" => $appointment->doctor->user->phone,
+        //         "7" => $google_map_url,
+        //     ]);
+        // }
 
         return response(['success' => true]);
     }
@@ -1342,20 +1350,28 @@ class WebsiteController extends Controller
         $appointment->update($data);
 
         $user = $appointment->user;
+        // CANCEL APPOINTMENT FROM PATIENT TO PATIENT
         if($user){
-            $notification_template = NotificationTemplate::where('title', 'status change')->first();
-
-            $detail['patient_name'] = auth()->user()->name;
-            $detail['appo_date'] = Carbon::now(env('timezone'))->format('Y-m-d');
-            $detail['appo_time'] = Carbon::now(env('timezone'))->format('H:i:s');
-            $detail['doctor_name'] = $appointment->doctor->name;
-            $detail['chamber_address'] = $appointment->doctor && $appointment->doctor->user && $appointment->doctor->user->userAddress ?$appointment->doctor->user->userAddress->address:'';
-            $detail['doctor_number'] = $appointment->doctor->user->phone;
-            $data = ["{{patient_name}}", "{{appo_date}}", "{{appo_time}}", "{{doctor_name}}", "{{chamber_address}}", "{{doctor_number}}"];
-
-            $msg1 = str_replace($data, $detail, $notification_template->msg_content);
-            $this->twilioService->sendWhatsAppNotification($appointment->phone_no,$msg1);
+            $this->twilioService->sendContentTemplate($request->phone_no,'HX0ba3274473ee4eb9ca629b66ad636039',[
+                "1" => auth()->user()->name,
+                "2" => $appointment->date,
+                "3" => $appointment->time,
+                "4" => $appointment->doctor->name,
+                "5" => $appointment->doctor && $appointment->doctor->user && $appointment->doctor->user->userAddress ?$appointment->doctor->user->userAddress->address:'',
+                "6" => $appointment->doctor->user->phone,
+            ]);
         }
+
+        // DOCTOR CANCEL NOTIFICATION FROM PATIENT
+        $doctor = $appointment->doctor;
+        $this->twilioService->sendContentTemplate($doctor->user->phone,"HXead88f80fb049d0989ec955fb3d7651d", [
+            "1" => $doctor->name,
+            "2" => $appointment->id,
+            "3" => $appointment->date,
+            "4" => $appointment->time,
+            "5" => auth()->user()->name,
+        ]);
+
         return response(['success' => true]);
     }
 
