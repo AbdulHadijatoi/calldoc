@@ -139,20 +139,20 @@ class AppointmentController extends Controller
         // $this->notificationChange($appointment_id,'Accept');
         $user = $appointment->user;
         $doctor = $appointment->doctor;
-        $doctorAddress = $doctor->user->userAddress;
-            
-        if($doctorAddress && $user){
-            $lat = $doctorAddress->lat;
-            $long = $doctorAddress->lang;
+        $hospital = $appointment->hospital;
+        $hospitalAddress = $hospital?$hospital->address??null:null;
+        if($hospitalAddress && $user){
+            $lat = $hospital->lat;
+            $long = $hospital->lng;
             $google_map_url = "https://www.google.com/maps?q=$lat,$long";
             
             $this->twilioService->sendContentTemplate($user->phone,'HX98adc0156425cced35ee51de2285465a',[
-                "1" => auth()->user()->name,
+                "1" => $user->name,
                 "2" => $appointment->date,
                 "3" => $appointment->time,
-                "4" => $appointment->doctor->name,
-                "5" => $doctor->user && $doctor->user->userAddress ?$doctor->user->userAddress->address:'',
-                "6" => $appointment->doctor->user->phone,
+                "4" => $doctor->name,
+                "5" => $hospitalAddress,
+                "6" => $doctor->user->phone_code . $doctor->user->phone,
                 "7" => $google_map_url,
             ]);
         }
@@ -164,8 +164,8 @@ class AppointmentController extends Controller
                 "2" => $appointment->id,
                 "3" => $appointment->date,
                 "4" => $appointment->time,
-                "5" => auth()->user()->name,
-                "6" => auth()->user()->phone,
+                "5" => $user->name,
+                "6" => $user->phone,
             ]);
         }
 
@@ -178,15 +178,17 @@ class AppointmentController extends Controller
         $appointment->update(['appointment_status' => 'cancel']);
 
         // Cancel Appointment to patient from DOCTOR
+        $doctor = $appointment->doctor;
+        $hospital = $appointment->hospital;
         $user = $appointment->user;
-        if($user){
+        if($hospital->address && $user){
             $this->twilioService->sendContentTemplate($user->phone,'HX0ba3274473ee4eb9ca629b66ad636039',[
                 "1" => $user->name,
                 "2" => $appointment->date,
                 "3" => $appointment->time,
                 "4" => $appointment->doctor->name,
-                "5" => $appointment->doctor && $appointment->doctor->user && $appointment->doctor->user->userAddress ?$appointment->doctor->user->userAddress->address:'',
-                "6" => $appointment->doctor->user->phone,
+                "5" => $hospital->address??"-",
+                "6" => $doctor->user->phone_code . $doctor->user->phone,
             ]);
         }
         return redirect()->back()->with('status',__('status change successfully...!!'));
@@ -508,18 +510,19 @@ class AppointmentController extends Controller
         // UPDATE APPOINTMENT FROM DOCTOR TO PATIENT
         $user = $appointment->user;
         $doctor = $appointment->doctor;
-        $doctorAddress = $doctor->user->userAddress;
-        if($doctorAddress && $user){
-            $lat = $doctorAddress->lat;
-            $long = $doctorAddress->lang;
+        $hospital = $appointment->hospital;
+        $hospitalAddress = $hospital?$hospital->address??null:null;
+        if($hospitalAddress && $user){
+            $lat = $hospital->lat;
+            $long = $hospital->lng;
             $google_map_url = "https://www.google.com/maps?q=$lat,$long";
             $this->twilioService->sendContentTemplate($request->phone_no,'HX9d3acc90ddfe9185394ac540873faac4',[
-                "1" => auth()->user()->name,
+                "1" => $user->name,
                 "2" => $appointment->date,
                 "3" => $appointment->time,
-                "4" => $appointment->doctor->name,
-                "5" => $appointment->doctor && $appointment->doctor->user && $appointment->doctor->user->userAddress ?$appointment->doctor->user->userAddress->address:'',
-                "6" => $appointment->doctor->user->phone,
+                "4" => $doctor->name,
+                "5" => $hospitalAddress,
+                "6" => $doctor->user->phone_code . $doctor->user->phone,
                 "7" => $google_map_url,
             ]);
         }
