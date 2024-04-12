@@ -516,7 +516,7 @@ class AppointmentController extends Controller
             $lat = $hospital->lat;
             $long = $hospital->lng;
             $google_map_url = "https://www.google.com/maps?q=$lat,$long";
-            $this->twilioService->sendContentTemplate($request->phone_no,'HX9d3acc90ddfe9185394ac540873faac4',[
+            $this->twilioService->sendContentTemplate($user->phone,'HX9d3acc90ddfe9185394ac540873faac4',[
                 "1" => $user->name,
                 "2" => $appointment->date,
                 "3" => $appointment->time,

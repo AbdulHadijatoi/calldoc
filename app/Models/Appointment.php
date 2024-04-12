@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -11,7 +12,7 @@ class Appointment extends Model
 
     protected $table = 'appointment';
 
-    protected $fillable = ['user_id','appointment_id','hospital_id','doctor_id','cancel_by','cancel_reason','payment_status','amount','payment_type','appointment_for','patient_name','age','report_image','drug_effect','patient_address','phone_no','date','time','payment_token','appointment_status','illness_information','note','doctor_commission','admin_commission','discount_id','discount_price','is_from','is_insured','policy_insurer_name','policy_number'];
+    protected $fillable = ['user_id','appointment_id','hospital_id','doctor_id','cancel_by','cancel_reason','payment_status','amount','payment_type','appointment_for','patient_name','age','report_image','drug_effect','patient_address','phone_no','date','time','payment_token','appointment_status','illness_information','note','doctor_commission','admin_commission','discount_id','discount_price','is_from','is_insured','policy_insurer_name','policy_number','notification_sent'];
 
     public function doctor()
     {
@@ -76,5 +77,13 @@ class Appointment extends Model
     public function getReviewAttribute()
     {
         return Review::where('appointment_id',$this->attributes['id'])->count();
+    }
+
+    public function scopeAppointmentsWithin24Hours($query)
+    {
+        return $query->where('notification_sent', 0)
+                    ->where('date', '>=', Carbon::now())
+                     ->where('date', '<', Carbon::now()->addDay())
+                     ->whereRaw("TIMESTAMP(date, time) <= ?", [Carbon::now()->addDay()->endOfDay()]);
     }
 }
