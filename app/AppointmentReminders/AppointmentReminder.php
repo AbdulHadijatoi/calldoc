@@ -17,7 +17,7 @@ class AppointmentReminder
      */
     function __construct()
     {
-        Log::info('AppointmentsWithin24Hours fetching due appointments'); // Log message
+
         $this->appointments = Appointment::appointmentsWithin24Hours()->get();
         $this->twilioService = new TwilioService();
     }
@@ -27,12 +27,12 @@ class AppointmentReminder
      *
      * @return void
      */
-    public function sendReminders()
-    {
-        Log::info('AppointmentsWithin24Hours List',[$this->appointments]); // Log message
+    public function sendReminders() {
         $this->appointments->each(
             function ($appointment) {
                 $this->_sendMessage($appointment);
+                $appointment->notification_sent = 1;
+                $appointment->save();
             }
         );
     }

@@ -5,6 +5,7 @@ namespace App\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
 
 class Appointment extends Model
 {
@@ -79,11 +80,23 @@ class Appointment extends Model
         return Review::where('appointment_id',$this->attributes['id'])->count();
     }
 
+
     public function scopeAppointmentsWithin24Hours($query)
     {
+        Log::info('AppointmentsWithin24Hours Fetching data'); // Log message
+        $twentyFourHoursFromNow = Carbon::now()->addHours(24);
+        
         return $query->where('notification_sent', 0)
-                    ->where('date', '>=', Carbon::now())
-                     ->where('date', '<', Carbon::now()->addDay())
-                     ->whereRaw("TIMESTAMP(date, time) <= ?", [Carbon::now()->addDay()->endOfDay()]);
+                    ->where(function ($query) use ($twentyFourHoursFromNow) {
+                        $query->where('date', '<', $twentyFourHoursFromNow->toDateString())
+                            ->orWhere(function ($query) use ($twentyFourHoursFromNow) {
+                                $query->where('date', '=', $twentyFourHoursFromNow->toDateString())
+                                    ->where('time', '<=', $twentyFourHoursFromNow->toTimeString());
+                            });
+                    });
     }
+
+
+
+
 }
