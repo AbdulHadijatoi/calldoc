@@ -329,22 +329,29 @@ class AppointmentController extends Controller
         return response(['success' => true , 'data' => $medicines]);
     }
 
-    public function addPrescription(Request $request)
+    public function addPrescription2(Request $request)
     {
+
         $data = $request->all();
         $medicine = array();
-        for ($i = 0; $i < count($data['medicines']); $i++)
+        for ($i = 0; $i < count($data['medicine']); $i++)
         {
-            $temp['medicine'] = $data['medicines'][$i];
-            $temp['days'] = $data['day'][$i];
-            $temp['morning'] = isset($data['morning'.$i]) ? 1 : 0;
-            $temp['afternoon'] = isset($data['afternoon'.$i]) ? 1 : 0;
-            $temp['night'] = isset($data['night'.$i]) ? 1 : 0;
+            $temp['medicine'] = isset($data['medicine'][$i])?$data['medicine'][$i]:'';
+            $temp['day'] = isset($data['day'][$i])?$data['day'][$i]:'0';
+            $temp['qty_morning'] = isset($data['qty_morning'][$i])?$data['qty_morning'][$i]:'0';
+            $temp['qty_afternoon'] = isset($data['qty_afternoon'][$i])?$data['qty_afternoon'][$i]:'0';
+            $temp['qty_night'] = isset($data['qty_night'][$i])?$data['qty_night'][$i]:'0';
+            $temp['remarks'] = isset($data['remarks'][$i])?$data['remarks'][$i]:'';
             array_push($medicine,$temp);
         }
         $pre['medicines'] = json_encode($medicine);
         $pre['appointment_id'] = $data['appointment_id'];
-        $pre['doctor_id'] = Doctor::where('user_id',auth()->user()->id)->first()->id;
+        $user = auth()->user();
+        if(!$user->doctor){
+            return back()->with('status',__('Doctor not found!'));
+        }
+        $pre['doctor_id'] = $user->doctor? $user->doctor->id: null;
+
         $pre['user_id'] = $data['user_id'];
         $pres = Prescription::create($pre);
         $prescription = Prescription::with(['doctor','user'])->find($pres->id);
@@ -359,6 +366,7 @@ class AppointmentController extends Controller
         $pres->save();
         return redirect('/appointment');
     }
+
     public function changeTimeslot(Request $request)
     {
         $doctor = Doctor::where('user_id',auth()->user()->id)->first();

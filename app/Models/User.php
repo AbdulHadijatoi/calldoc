@@ -69,6 +69,11 @@ class User extends Authenticatable
         return $this->hasOne('App\Models\User');
     }
     
+    public function doctor()
+    {
+        return $this->hasOne(Doctor::class,'user_id');
+    }
+    
     public function userAddress()
     {
         return $this->hasOne(UserAddress::class, 'user_id');

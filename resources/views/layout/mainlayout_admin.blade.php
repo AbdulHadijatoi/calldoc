@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <script src="{{ url('assets_admin/js/jquery.min.js')}}"></script>
+    
     @include('layout.partials.head_admin')
 </head>
 

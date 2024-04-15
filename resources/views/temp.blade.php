@@ -20,22 +20,25 @@
     </head>
     <body>
         <table>
+            
+            <tr>
+                <th>{{__('Medicine Name')}}</th>
+                <th>{{__('Days')}}</th>
+                <th>{{__('Quantity/Morning')}}</th>
+                <th>{{__('Quantity/Afternoon')}}</th>
+                <th>{{__('Quantity/Night')}}</th>
+                <th>{{__('Remarks')}}</th>
+            <tr>
             @foreach (json_decode($medicineName) as $item)
                 <tr>
                     <td>{{ $item->medicine }}</td>
-                    <td>{{ $item->days }}</td>
-                    <td>
-                        {{$item->morning == 1 ? 1 : 0}}&nbsp;&nbsp;
-                        {{$item->afternoon == 1 ? 1 : 0}}&nbsp;&nbsp;
-                        {{$item->night == 1 ? 1 : 0}}
-                    </td>
+                    <td>{{ $item->day }}</td>
+                    <td>{{ $item->qty_morning }}</td>
+                    <td>{{ $item->qty_afternoon }}</td>
+                    <td>{{ $item->qty_night }}</td>
+                    <td>{{ $item->remarks }}</td>
                 </tr>
             @endforeach
-            <tr>
-                <th>Medicine name</th>
-                <th>Days</th>
-                <th>Frequency</th>
-            <tr>
         </table>
     </body>
 </html>

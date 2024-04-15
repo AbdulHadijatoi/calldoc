@@ -394,60 +394,7 @@ $(document).ready(function()
     });
 
     // ADD TABLE ROW IN PRESCRIPTION
-    $(".AddMoreRow").on('click', function ()
-    {
-        var length = $('.trCopy').length;
-        $('.tBody').append(
-            '<tr class="trCopy">'+
-            '<td class="medicine'+length+'"></td>'+
-            '<td>' +
-                '<input class="form-control" min="1" name="day[]" value="2" type="text">' +
-            '</td>' +
-            '<td>' +
-                '<div class="d-flex">'+
-                    '<div class="p-2">'+
-                        '<input type="checkbox" value="1" id="morning'+length+'" name="morning'+length+'[]">'+
-                        '<label class="ml-2" for="morning'+length+'">morning</label>'+
-                    '</div>'+
-                    '<div class="p-2">' +
-                        '<input type="checkbox" value="1" id="afternoon'+length+'" name="afternoon'+length+'[]">'+
-                        '<label class="ml-2" for="afternoon'+length+'">afternoon</label>'+
-                    '</div>'+
-                    '<div class="p-2">' +
-                        '<input type="checkbox" value="1" id="night'+length+'" name="night'+length+'[]">' +
-                        '<label class="ml-2" for="night'+length+'">night</label>'+
-                    '</div>' +
-                '</div>' +
-            '</td>' +
-            '<td>' +
-                '<button type="button" class="btn bg-danger-light trash deleteBtn"><i class="far fa-trash-alt"></i></button>' +
-            '</td>' +
-        '</tr>');
-        $.ajax({
-            headers:
-            {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            },
-            type: "GET",
-            url: base_url + '/allMedicine',
-            success: function (result) {
-                $('.medicine'+length).append('<select name="medicines[]" class="select2 custom">');
-                $('.select2').select2({
-                    dropdownAutoWidth : true,
-                    width: '-webkit-fill-available'
-                });
-                result.data.forEach(element => {
-                    $('.custom').append('<option value="'+element.name+'">'+element.name+'</option>');
-                });
-            },
-            error: function (err) {
-            }
-        });
-
-        $(document).on('click', '.deleteBtn', function() {
-            $(this).closest('.trCopy').remove();
-        });
-    });
+    
 
     $(document).on('click', 'button.removebtn', function ()
     {
