@@ -57,11 +57,32 @@
                     </div>
                 </div>
             </div>
+            <div class="form-row">
+                <div class="form-group col-md-12">
+                    <label>Record voice note for patient (OPTIONAL)</label>
+                    <br>
+                    <audio id="recorder" muted hidden></audio>
+
+                    <input type="hidden" id="appointment_id" value="{{ $appointment->id }}">
+                    <button class="btn btn-primary py-3 col-md-3" id="start">
+                        <i class="fa fa-microphone"></i> Start Recording
+                    </button>
+                    <button disabled class="btn btn-info py-3 col-md-3 mt-md-0 mt-sm-1" id="stop">
+                        <i class="fa fa-stop"></i> Stop
+                    </button>
+                    <button disabled class="btn btn-success py-3 col-md-3 mt-md-0 mt-sm-1" id="saveRecording">
+                        <i class="fa fa-save"></i> Save
+                    </button>
+                    <audio id="player" controls class="d-none"></audio>
+                </div>
+            </div>
             <!-- Form -->
-            <form action="{{ url('addPrescription') }}" method="post" class="myform">
+            <form action="{{ url('addPrescription') }}" method="post" class="myform" enctype="multipart/form-data">
                 @csrf
                 <input type="hidden" name="appointment_id" value="{{ $appointment->id }}">
                 <input type="hidden" name="user_id" value="{{ $appointment->user_id }}">
+                <input type="hidden" name="pres_id" id="pres_id">
+                
                 <!-- Table -->
                 <div class="table-responsive">
                     <table class="table table-bordered table-center">
@@ -87,7 +108,130 @@
 
 </section>
 
+
 <script>
+    // RECORDING SCRIPT:BEGINS
+    class VoiceRecorder {
+        constructor() {
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                console.log("getUserMedia supported")
+            } else {
+                console.log("getUserMedia is not supported on your browser!")
+            }
+
+            this.mediaRecorder
+            this.stream
+            this.chunks = []
+            this.isRecording = false
+
+            this.recorderRef = document.querySelector("#recorder")
+            this.playerRef = document.querySelector("#player")
+            this.startRef = document.querySelector("#start")
+            this.stopRef = document.querySelector("#stop")
+            this.saveRef = document.querySelector("#saveRecording")
+            this.appointmentIdRef = document.querySelector("#appointment_id")
+            this.presIdRef = document.querySelector("#pres_id")
+            
+            this.startRef.onclick = this.startRecording.bind(this)
+            this.stopRef.onclick = this.stopRecording.bind(this)
+            this.saveRef.onclick = this.saveRecording.bind(this)
+
+            this.constraints = {
+                audio: true,
+                video: false
+            }
+            
+        }
+
+        handleSuccess(stream) {
+            this.stream = stream
+            this.stream.oninactive = () => {
+                console.log("Stream ended!")
+            };
+            this.recorderRef.srcObject = this.stream
+            this.mediaRecorder = new MediaRecorder(this.stream)
+            console.log(this.mediaRecorder)
+            this.mediaRecorder.ondataavailable = this.onMediaRecorderDataAvailable.bind(this)
+            // this.mediaRecorder.onstop = this.onMediaRecorderStop.bind(this)
+            this.recorderRef.play()
+            this.mediaRecorder.start()
+        }
+
+        handleError(error) {
+            console.log("navigator.getUserMedia error: ", error)
+        }
+        
+        onMediaRecorderDataAvailable(e) { this.chunks.push(e.data) }
+        
+        saveRecording(){
+            this.saveRef.disabled = true;
+            this.stopRef.disabled = true;
+            this.saveRef.innerHTML = 'Loading...';
+            const blob = new Blob(this.chunks, { 'type': 'audio/ogg; codecs=opus' });
+            this.chunks = [];
+            this.stream.getAudioTracks().forEach(track => track.stop());
+            this.stream = null;
+
+            // Create a FormData object and append the audio Blob
+            const formData = new FormData();
+            formData.append('audio_clip', blob, 'recording.ogg');
+            formData.append('appointment_id', this.appointmentIdRef.value);
+            formData.append('_token', '{{ csrf_token() }}'); // Add CSRF token
+
+            // Send the audio data to the backend using fetch
+            fetch('{{ url("save-audio-clip") }}', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (response.ok) {
+                    this.saveRef.innerHTML = 'Done';
+                    return response.json();
+                }
+                throw new Error('Network response was not ok.');
+            })
+            .then(data => {
+                // Handle the response from the backend if needed
+                if(data.pres_id){
+                    this.presIdRef.value = data.pres_id;
+                }
+                console.log(data);
+            })
+            .catch(error => {
+                console.error('There was a problem with your fetch operation:', error);
+            });
+        }
+
+        startRecording() {
+            if (this.isRecording) return
+            this.isRecording = true
+            this.startRef.innerHTML = '<i style="font-size: 22px;" class="fa fa-microphone"></i>'
+            this.stopRef.disabled = false;
+            this.saveRef.innerHTML = '<i class="fa fa-save"></i> Save'
+            this.playerRef.src = ''
+            navigator.mediaDevices
+                .getUserMedia(this.constraints)
+                .then(this.handleSuccess.bind(this))
+                .catch(this.handleError.bind(this))
+        }
+        
+        stopRecording() {
+            if (!this.isRecording) return
+            this.isRecording = false
+            this.startRef.innerHTML = '<i class="fa fa-microphone"></i> Start Recording'
+            this.stopRef.innerHTML = 'Stop Recording'
+            this.saveRef.disabled = false;
+            this.recorderRef.pause()
+            this.mediaRecorder.stop()
+        }
+        
+    }
+
+    window.voiceRecorder = new VoiceRecorder()
+
+    // RECORDING SCRIPT:ENDS
+
+
     $(document).ready(function() {
         var btnToggle = $('#toggleMedicineBtn');
         var selectMedicineLabel = "{{ __('Select Medicine') }}";
@@ -136,7 +280,15 @@
             $(this).closest('tr').remove();
         });
 
+        function isTableBodyEmpty() {
+            return $('.tBody').find('tr').length === 0;
+        }
+        
         $("#submitBtn").on('click', function () {
+            if (isTableBodyEmpty()) {
+                alert('Please add at least one medicine before submitting.');
+                return false; // Prevent form submission
+            }
             $(".myform").submit();
         });
 
@@ -154,27 +306,7 @@
             }
         });
 
-        // Check if SpeechRecognition is available
-        if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
-            var recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-
-            recognition.lang = '{{ app()->getLocale() }}'; // Set language to current locale
-
-            recognition.onresult = function(event) {
-                var result = event.results[0][0].transcript;
-                $('#voice_note').val(result); // Set the value of the voice_note input field
-            };
-
-            recognition.onerror = function(event) {
-                console.error('Speech recognition error:', event.error);
-            };
-
-            $('#voiceInputBtn').on('click', function() {
-                recognition.start(); 
-            });
-        } else {
-            console.error('Speech recognition not supported in this browser.');
-        }
+        
     });
 </script>
 

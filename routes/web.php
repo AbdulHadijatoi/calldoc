@@ -428,6 +428,7 @@ Route::group(['middleware' => ['XssSanitizer']], function ()
         Route::get('prescription/{appointment_id}',[AppointmentController::class,'prescription']);
         Route::get('allMedicine',[AppointmentController::class,'all_medicine']);
         Route::post('addPrescription',[AppointmentController::class,'addPrescription']);
+        Route::post('save-audio-clip',[AppointmentController::class,'saveAudioClip']);
 
         Route::get('commission',[AppointmentController::class,'commission']);
         Route::post('show_settalement',[AppointmentController::class,'show_settlement']);

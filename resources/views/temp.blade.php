@@ -29,7 +29,7 @@
                 <th>{{__('Quantity/Night')}}</th>
                 <th>{{__('Remarks')}}</th>
             <tr>
-            @foreach (json_decode($medicineName) as $item)
+            @foreach (json_decode($medicine) as $item)
                 <tr>
                     <td>{{ $item->medicine }}</td>
                     <td>{{ $item->day }}</td>

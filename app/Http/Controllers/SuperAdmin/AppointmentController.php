@@ -329,9 +329,8 @@ class AppointmentController extends Controller
         return response(['success' => true , 'data' => $medicines]);
     }
 
-    public function addPrescription2(Request $request)
+    public function addPrescription_old(Request $request)
     {
-
         $data = $request->all();
         $medicine = array();
         for ($i = 0; $i < count($data['medicine']); $i++)
@@ -366,6 +365,96 @@ class AppointmentController extends Controller
         $pres->save();
         return redirect('/appointment');
     }
+
+    public function saveAudioClip(Request $request) {
+        try {
+            $request->validate([
+                'audio_clip' => 'required|file|mimes:webm',
+                'appointment_id' => 'required|exists:appointment,id',
+            ]);
+
+            $appointment = Appointment::find($request->appointment_id);
+
+            $audioClip = $request->file('audio_clip');
+            $file_name = 'audio_clip_' . time() . '.' . $audioClip->getClientOriginalExtension();
+            $audioClip->move(public_path('prescription/audio_notes'), $file_name);
+            
+            $pres = new Prescription();
+            $pres->appointment_id = $request->appointment_id;
+            $pres->medicines = '';
+            $pres->user_id = $appointment->user_id;
+            $pres->doctor_id = auth()->user()->doctor ? auth()->user()->doctor->id : null;
+            $pres->audio_note = "prescription/audio_notes/". $file_name;
+            $pres->save();
+
+            $user = $appointment->user;
+            $doctor = $appointment->doctor;
+            $hospital = $appointment->hospital;
+            $hospitalAddress = $hospital?$hospital->address??null:null;
+            if($hospitalAddress && $user){
+                $this->twilioService->sendContentTemplate($user->phone,'HX6a60947966f8aca1b3abf216a6e71935',[
+                    "1" => $user->name,
+                    "2" => $appointment->date,
+                    "3" => $doctor->name,
+                    "4" => $hospitalAddress,
+                    "5" => $pres->audio_note,
+                ]);
+            }
+
+            return response()->json([
+                'message' => 'Audio clip saved successfully',
+                'pres_id'=>$pres->id
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 422);
+        }
+    }
+    
+    public function addPrescription(Request $request){
+
+        // Get all form data
+        $data = $request->all();
+
+        // Handle medicine data
+        $medicine = [];
+        for ($i = 0; $i < count($data['medicine']); $i++) {
+            $temp['medicine'] = isset($data['medicine'][$i]) ? $data['medicine'][$i] : '';
+            $temp['day'] = isset($data['day'][$i]) ? $data['day'][$i] : '0';
+            $temp['qty_morning'] = isset($data['qty_morning'][$i]) ? $data['qty_morning'][$i] : '0';
+            $temp['qty_afternoon'] = isset($data['qty_afternoon'][$i]) ? $data['qty_afternoon'][$i] : '0';
+            $temp['qty_night'] = isset($data['qty_night'][$i]) ? $data['qty_night'][$i] : '0';
+            $temp['remarks'] = isset($data['remarks'][$i]) ? $data['remarks'][$i] : '';
+            array_push($medicine, $temp);
+        }
+
+        $pres_id = $request->pres_id;
+        // Create prescription data
+        $pres = null;
+        if($pres_id){
+            $pres = Prescription::find($pres_id);
+        }
+        if(!$pres){
+            $pres = new Prescription();
+            $pres->appointment_id = $data['appointment_id'];
+            $pres->user_id = $data['user_id'];
+            $pres->doctor_id = auth()->user()->doctor ? auth()->user()->doctor->id : null;
+        }
+    
+        $pres->medicines = json_encode($medicine);
+    
+        $pres->save();
+
+        // Generate and save PDF
+        $pdf = PDF::loadView('temp', ["medicine"=>$pres->medicines]);
+        $pdfFileName = uniqid() . '.pdf';
+        $pdf->save(public_path('prescription/upload/' . $pdfFileName));
+        $pres->pdf = $pdfFileName;
+        $pres->save();
+
+        return redirect('/appointment');
+    }
+
+
 
     public function changeTimeslot(Request $request)
     {
