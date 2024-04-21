@@ -5,6 +5,7 @@ use App\Http\Controllers\lab\PathologyController;
 use App\Http\Controllers\lab\RadiologyController;
 use App\Http\Controllers\LabSettingController;
 use App\Http\Controllers\MultiDeleteController;
+use App\Http\Controllers\PrescriptionRecordingController;
 use App\Http\Controllers\SuperAdmin\AdminController;
 use App\Http\Controllers\SuperAdmin\AdminUserController;
 use App\Http\Controllers\SuperAdmin\AppointmentController;
@@ -56,6 +57,11 @@ use Twilio\Rest\Client;
 |
 */
 Auth::routes();
+
+Route::post('voice-callback', function (Request $request) {
+    Log::info('VOICE CALLBACK: Request data', $request->all());
+});
+
 Route::get('/send-test-email', function () {
     Mail::to('abdulhadijatoi@gmail.com')->send(new TestMail('test1','test2','test3'));
     
@@ -428,7 +434,7 @@ Route::group(['middleware' => ['XssSanitizer']], function ()
         Route::get('prescription/{appointment_id}',[AppointmentController::class,'prescription']);
         Route::get('allMedicine',[AppointmentController::class,'all_medicine']);
         Route::post('addPrescription',[AppointmentController::class,'addPrescription']);
-        Route::post('save-audio-clip',[AppointmentController::class,'saveAudioClip']);
+        Route::post('save-recording',[AppointmentController::class,'saveRecording']);
 
         Route::get('commission',[AppointmentController::class,'commission']);
         Route::post('show_settalement',[AppointmentController::class,'show_settlement']);
@@ -504,6 +510,8 @@ Route::group(['middleware' => ['XssSanitizer']], function ()
         ]);
     });
 });
+
+Route::get('/prescription_recording/{prescription_id?}/{keycode?}',[PrescriptionRecordingController::class,'index']);
 
 Route::middleware(['auth'])->group(function ()
 {

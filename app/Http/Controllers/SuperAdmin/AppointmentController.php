@@ -30,6 +30,7 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Str;
 
 class AppointmentController extends Controller
 {
@@ -366,25 +367,33 @@ class AppointmentController extends Controller
         return redirect('/appointment');
     }
 
-    public function saveAudioClip(Request $request) {
+    public function saveRecording(Request $request) {
         try {
             $request->validate([
-                'audio_clip' => 'required|file|mimes:webm',
+                'recording' => 'required|file|mimes:webm',
                 'appointment_id' => 'required|exists:appointment,id',
             ]);
 
             $appointment = Appointment::find($request->appointment_id);
 
-            $audioClip = $request->file('audio_clip');
-            $file_name = 'audio_clip_' . time() . '.' . $audioClip->getClientOriginalExtension();
-            $audioClip->move(public_path('prescription/audio_notes'), $file_name);
-            
-            $pres = new Prescription();
-            $pres->appointment_id = $request->appointment_id;
-            $pres->medicines = '';
-            $pres->user_id = $appointment->user_id;
-            $pres->doctor_id = auth()->user()->doctor ? auth()->user()->doctor->id : null;
-            $pres->audio_note = "prescription/audio_notes/". $file_name;
+            $recording = $request->file('recording');
+            $file_name = 'recording_' . time() . '.' . $recording->getClientOriginalExtension();
+            $recording->move(public_path('prescription/recordings'), $file_name);
+
+            $randomString = Str::random(50);
+            $pres = Prescription::find($request->appointment_id);
+            if($pres){
+                $pres->recording = "prescription/recordings/". $file_name;
+                $pres->key_code = $randomString;
+            }else{
+                $pres = new Prescription();
+                $pres->appointment_id = $request->appointment_id;
+                $pres->medicines = '';
+                $pres->user_id = $appointment->user_id;
+                $pres->doctor_id = auth()->user()->doctor ? auth()->user()->doctor->id : null;
+                $pres->recording = "prescription/recordings/". $file_name;
+                $pres->key_code = $randomString;
+            }
             $pres->save();
 
             $user = $appointment->user;
@@ -392,12 +401,12 @@ class AppointmentController extends Controller
             $hospital = $appointment->hospital;
             $hospitalAddress = $hospital?$hospital->address??null:null;
             if($hospitalAddress && $user){
-                $this->twilioService->sendContentTemplate($user->phone,'HX6a60947966f8aca1b3abf216a6e71935',[
+                $this->twilioService->sendContentTemplate($user->phone,'HX4d21db0c85b7cc4dbe7653c610a33f26',[
                     "1" => $user->name,
                     "2" => $appointment->date,
                     "3" => $doctor->name,
                     "4" => $hospitalAddress,
-                    "5" => $pres->audio_note,
+                    "5" => url("prescription_recording/".$pres->id."/".$pres->key_code),
                 ]);
             }
 

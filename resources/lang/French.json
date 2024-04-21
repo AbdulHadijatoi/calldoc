@@ -1070,9 +1070,12 @@
     "Remarks": "Remarques",
     "Select Medicine": "Sélectionnez un médicament",
     "Add More Medicines": "Ajouter plus de médicaments",
+    "Medicines": "médicaments",
     "Want to write it yourself?": "Voulez-vous l'écrire vous-même?",
     "Medicine field is required": "Le domaine médecine est obligatoire",
     "Add voice message": "Ajouter un message vocal",
     "Voice Message": "Message vocal",
-    "Voice": "Voix"
+    "Voice": "Voix",
+    "Your doctor has left a voice note for you. Please check it out below": "Votre médecin vous a laissé une note vocale. Veuillez le consulter ci-dessous"
+
 }

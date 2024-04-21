@@ -174,18 +174,18 @@
 
             // Create a FormData object and append the audio Blob
             const formData = new FormData();
-            formData.append('audio_clip', blob, 'recording.ogg');
+            formData.append('recording', blob, 'recording.ogg');
             formData.append('appointment_id', this.appointmentIdRef.value);
             formData.append('_token', '{{ csrf_token() }}'); // Add CSRF token
 
             // Send the audio data to the backend using fetch
-            fetch('{{ url("save-audio-clip") }}', {
+            fetch('{{ url("save-recording") }}', {
                 method: 'POST',
                 body: formData
             })
             .then(response => {
                 if (response.ok) {
-                    this.saveRef.innerHTML = 'Done';
+                    this.saveRef.innerHTML = 'Successfully saved!';
                     return response.json();
                 }
                 throw new Error('Network response was not ok.');
