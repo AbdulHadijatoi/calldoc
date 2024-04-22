@@ -794,6 +794,33 @@ class WebsiteController extends Controller
         return response(['success' => true, 'data' => $timeslots, 'date' => Carbon::parse($request->date)->format('d M')]);
     }
 
+    public function medicinesListing(Request $request)
+    {
+        $data = $request->all();
+        
+        // Query medicines with status = 1 (active)
+        $medicinesQuery = Medicine::where('status', 1);
+
+        // Apply search filter
+        if (isset($data['search_val']) && $data['search_val'] !== '') {
+            $medicinesQuery->where('name', 'LIKE', '%' . $data['search_val'] . '%');
+        }
+
+        // Get paginated data
+        $medicines = $medicinesQuery->paginate(10); // Adjust the pagination limit as required
+
+        // Check if the request is from AJAX
+        if (isset($data['from'])) {
+            $view = view('website.display_medicines_table', compact('medicines'))->render();
+            return response()->json(['html' => $view, 'success' => true]);
+        }
+
+        // Regular page view
+        return view('website.medicines', compact('medicines'));
+    }
+
+
+
     public function ourBlogs(Request $request)
     {
         $data = $request->all();

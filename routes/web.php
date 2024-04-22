@@ -183,6 +183,7 @@ Route::group(['middleware' => ['XssSanitizer']], function ()
     Route::any('/all-labs',[WebsiteController::class,'labs']);
     Route::get('/signup',[WebsiteController::class,'signup']);
     Route::any('/patient-login',[WebsiteController::class,'patientLogin']);
+    Route::any('/medicines_list',[WebsiteController::class,'medicinesListing']);
     Route::any('/our_blogs',[WebsiteController::class,'ourBlogs']);
     Route::get('/blog-details/{id}/{blog_name}',[WebsiteController::class,'singleBlog']);
     Route::get('/our-offers',[WebsiteController::class,'ourOffers']);
