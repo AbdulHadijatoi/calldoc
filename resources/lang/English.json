@@ -1079,5 +1079,14 @@
     "Add voice message": "",
     "Voice Message": "",
     "Voice": "",
-    "Your doctor has left a voice note for you. Please check it out below": ""
+    "Your doctor has left a voice note for you. Please check it out below": "",
+    "Today's availability slots": "",
+	"Tomorrow's availability slots": "",
+	"Monday": "",
+	"Tuesday": "",
+	"Wednesday": "",
+	"Thursday": "",
+	"Friday": "",
+	"Saturday": "",
+	"Sunday": ""
 }

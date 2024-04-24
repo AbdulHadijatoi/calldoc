@@ -388,8 +388,8 @@
     "Edit Time Slot": "Modifier le créneau horaire",
     "Edit Timeslot": "Modifier le créneau horaire",
     "Edit Treatments": "Modifier les traitements",
-    "Education": "Éducation",
-    "Education and certificate(award details)": "Éducation et certificat (détails de la récompense)",
+    "Education": "Formation",
+    "Education and certificate(award details)": "Formation et certificat (détails de la récompense)",
     "email": "e-mail",
     "Email": "E-mail",
     "End Time": "Heure de fin",
@@ -1066,7 +1066,7 @@
     "Reimbursement rate by health insurance": "Taux de remboursement par l'assurance maladie",
     "Quantity/Morning": "Quantité/Matin",
     "Quantity/Afternoon": "Quantité/Après-midi",
-    "Quantity/Night": "Quantité/Nuit",
+    "Quantity/Night": "Quantité/Soir",
     "Remarks": "Remarques",
     "Select Medicine": "Sélectionnez un médicament",
     "Add More Medicines": "Ajouter plus de médicaments",
@@ -1076,6 +1076,14 @@
     "Add voice message": "Ajouter un message vocal",
     "Voice Message": "Message vocal",
     "Voice": "Voix",
-    "Your doctor has left a voice note for you. Please check it out below": "Votre médecin vous a laissé une note vocale. Veuillez le consulter ci-dessous"
-
-}
+    "Your doctor has left a voice note for you. Please check it out below": "Votre médecin vous a laissé une note vocale. Veuillez le consulter ci-dessous",
+	"Today's availability slots": "Les Créneaux disponibles aujourd'hui",
+	"Tomorrow's availability slots": "Les créneaux disponibles de demain",
+	"Monday": "Lundi",
+	"Tuesday": "Mardi",
+	"Wednesday": "mercredi",
+	"Thursday": "Jeudi",
+	"Friday": "Vendredi",
+	"Saturday": "Samedi",
+	"Sunday": "Dimanche"
+}   

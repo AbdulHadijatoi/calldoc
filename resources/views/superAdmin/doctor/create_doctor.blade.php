@@ -12,7 +12,7 @@
     @if (session('status'))
         @include('superAdmin.auth.status',['status' => session('status')])
     @endif
-
+    
     <div class="section_body">
         <form action="{{ url('doctor') }}" method="post" enctype="multipart/form-data" class="myform">
             @csrf
@@ -40,6 +40,7 @@
                                 </div>
                             @enderror
                         </div>
+                        
                         <div class="col-lg-10 col-md-8">
                             <div class="form-group">
                                 <label class="col-form-label">{{__('Name')}}</label>
@@ -97,7 +98,7 @@
                     <div class="row mt-4">
                         <div class="col-lg-6 form-group">
                             <label class="col-form-label">{{__('Date of birth')}}</label>
-                            <input type="text" class="form-control datePicker @error('dob') is-invalid @enderror" value="{{old('dob')}}" name="dob" required>
+                            <input type="text" class="form-control datePicker @error('dob') is-invalid @enderror" value="{{old('dob')}}" name="dob">
                             @error('dob')
                                 <div class="invalid-feedback">
                                     {{ $message }}
@@ -122,7 +123,7 @@
                     <div class="row mt-4">
                         <div class="col-lg-12 form-group">
                             <label class="col-form-label">{{__('Professional Bio')}}</label>
-                            <textarea name="desc" rows="10" cols="10"  class="form-control @error('desc') is-invalid @enderror" required>{{old('desc')}}</textarea>
+                            <textarea name="desc" rows="10" cols="10"  class="form-control @error('desc') is-invalid @enderror">{{old('desc')}}</textarea>
                             @error('desc')
                                 <div class="invalid-feedback">
                                     {{ $message }}
@@ -147,19 +148,19 @@
                                         <div class="col-12 col-md-6 col-lg-4">
                                             <div class="form-group">
                                                 <label>{{__('Degree')}}</label>
-                                                <input type="text"  required name="degree[]" value="" class="form-control" >
+                                                <input type="text" name="degree[]" value="" class="form-control" >
                                             </div>
                                         </div>
                                         <div class="col-12 col-md-6 col-lg-4">
                                             <div class="form-group">
                                                 <label>{{__('College/Institute')}}</label>
-                                                <input type="text" required name="college[]" value="" class="form-control" >
+                                                <input type="text" name="college[]" value="" class="form-control" >
                                             </div>
                                         </div>
                                         <div class="col-12 col-md-6 col-lg-4">
                                             <div class="form-group">
                                                 <label>{{__('Year of Completion')}}</label>
-                                                <input type="text" maxlength="4" pattern="^[0-9]{4}$"  required name="year[]" value="" class="form-control" >
+                                                <input type="text" maxlength="4" pattern="^[0-9]{4}$" name="year[]" value="" class="form-control" >
                                             </div>
                                         </div>
                                     </div>
@@ -178,13 +179,13 @@
                                     <div class="col-12 col-md-5">
                                         <div class="form-group">
                                             <label>{{__('certificate')}}</label>
-                                            <input type="text"  required name="certificate[]" value="" class="form-control" >
+                                            <input type="text"  name="certificate[]" value="" class="form-control" >
                                         </div>
                                     </div>
                                     <div class="col-12 col-md-5">
                                         <div class="form-group">
                                             <label>{{__('Year')}}</label>
-                                            <input type="text" required  name="certificate_year[]" maxlength="4" value="" pattern="^[0-9]{4}$" class="form-control" >
+                                            <input type="text"  name="certificate_year[]" maxlength="4" value="" pattern="^[0-9]{4}$" class="form-control" >
                                         </div>
                                     </div>
                                 </div>
@@ -204,7 +205,7 @@
                 <div class="card-body">
                     <div class="form-group">
                         <label class="col-form-label">{{__('Experience (in years)')}}</label>
-                        <input type="number" min="1" name="experience" value="{{ old('experience') }}"  class="form-control @error('experience') is-invalid @enderror" required>
+                        <input type="number" min="1" name="experience" value="{{ old('experience') }}"  class="form-control @error('experience') is-invalid @enderror">
                         @error('number')
                             <div class="invalid-feedback">
                                 {{ $message }}
@@ -213,7 +214,7 @@
                     </div>
                     <div class="form-group">
                         <label class="col-form-label">{{__('Appointment fees')}}</label>
-                        <input type="number" min="1" name="appointment_fees" value="{{ old('appointment_fees') }}"  class="form-control @error('appointment_fees') is-invalid @enderror" required>
+                        <input type="number" min="1" name="appointment_fees" value="{{ old('appointment_fees') }}"  class="form-control @error('appointment_fees') is-invalid @enderror">
                         @error('appointment_fees')
                             <div class="invalid-feedback">
                                 {{ $message }}
@@ -318,7 +319,7 @@
                     <div class="row mt-4">
                         <div class="col-lg-6 form-group">
                             <label class="col-form-label">{{__('Start Time')}}</label>
-                            <input class="form-control timepicker @error('start_time') is-invalid @enderror"  name="start_time" value="{{old('start_time')}}" type="time" required>
+                            <input class="form-control timepicker @error('start_time') is-invalid @enderror"  name="start_time" value="{{old('start_time')}}" type="time">
                             @error('start_time')
                                 <div class="invalid-feedback">
                                     {{ $message }}
@@ -327,7 +328,7 @@
                         </div>
                         <div class="col-lg-6 form-group">
                             <label class="col-form-label">{{__('End Time')}}</label>
-                            <input class="form-control timepicker @error('end_time') is-invalid @enderror" name="end_time"  value="{{old('end_time')}}" type="time" required>
+                            <input class="form-control timepicker @error('end_time') is-invalid @enderror" name="end_time"  value="{{old('end_time')}}" type="time">
                             @error('end_time')
                                 <div class="invalid-feedback">
                                     {{ $message }}

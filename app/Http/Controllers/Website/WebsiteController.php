@@ -1367,13 +1367,28 @@ class WebsiteController extends Controller
         // DOCTOR CANCEL NOTIFICATION FROM PATIENT
         $this->twilioService->sendContentTemplate($doctor->user->phone,"HXead88f80fb049d0989ec955fb3d7651d", [
             "1" => $doctor->name,
-            "2" => $appointment->id,
+            "2" => $appointment->appointment_id,
             "3" => $appointment->date,
             "4" => $appointment->time,
             "5" => $user->name,
         ]);
 
         return response(['success' => true]);
+    }
+
+    public function testNotification(){
+        $appointment = Appointment::find(49);
+
+        $user = $appointment->user;
+        $doctor = $appointment->doctor;
+
+        $this->twilioService->sendContentTemplate("766635027","HXead88f80fb049d0989ec955fb3d7651d", [
+            "1" => $doctor->name,
+            "2" => $appointment->appointment_id,
+            "3" => $appointment->date,
+            "4" => $appointment->time,
+            "5" => $user->name,
+        ]);
     }
 
     public function deleteAccount()

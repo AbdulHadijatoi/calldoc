@@ -173,7 +173,7 @@ Route::get('/clear-cache',function ()
     Artisan::call('config:clear');
     return "Cache is cleared";
 });
-
+Route::get('/test_notification',[WebsiteController::class,'testNotification']);
 Route::group(['middleware' => ['XssSanitizer']], function ()
 {
     Route::get('/',[WebsiteController::class,'index']);

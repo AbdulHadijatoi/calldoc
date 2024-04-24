@@ -124,7 +124,7 @@
             <div class="lg:w-[30%] xmd:w-[40%] border-b-0 mb-10 border-white-light ml-2">
                 <div class="xmd:pl-[10px] pt-6 xxsm:pl-0">
                     <h1 class="text-xl font-normal leading-6 font-fira-sans text-black pb-4">{{__('Availablity')}}</h1>
-                    <h1 class="font-fira-sans leading-5 text-base font-medium text-black">{{__('Today\'s Available Slots')}}
+                    <h1 class="font-fira-sans leading-5 text-base font-medium text-black">{{__("Today's Available Slots")}}
                     </h1>
                     <div class="flex flex-wrap h-48 overflow-hidden	overflow-y-scroll mt-5">
                         <div class="flex flex-wrap">
@@ -140,8 +140,7 @@
                         </div>
                     </div>
 
-                    <h1 class="font-fira-sans leading-5 text-base font-medium text-black pt-4 mt-2">{{__('Tomorrow’s
-                    Available Slots')}}</h1>
+                    <h1 class="font-fira-sans leading-5 text-base font-medium text-black pt-4 mt-2">{{__("Tomorrow's Available Slots")}}</h1>
                     <div class="flex flex-wrap h-48 overflow-hidden	overflow-y-scroll mt-5">
                         <div class="flex flex-wrap">
                             @foreach ($tomorrow_timeslots as $tomorrow_timeslot)

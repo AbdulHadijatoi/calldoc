@@ -268,11 +268,9 @@
                             $date = Carbon\Carbon::now(env('timezone'));
                             @endphp
                             <input type="hidden" name="date" value="{{ $date->format('Y-m-d') }}">
-                            @if (Session::get('locale') ==='Arabic')
-                                <div id="datepickerId" onclick="dateChange()" data-date="{{ $date->format('Y-m-d') }}" class="rtl"></div>
-                            @elseif(Session::get('locale') ==='English')
-                                <div id="datepickerId" onclick="dateChange()" data-date="{{ $date->format('Y-m-d') }}"></div>
-                            @endif
+
+                            <div id="datepickerId" onclick="dateChange()" data-date="{{ $date->format('Y-m-d') }}"></div>
+                            
                             <div class="p-5">
                                 <div class="mt-2 font-normal text-xl font-fira-sans">
                                     <span class="currentDate">{{ $date->format('d M') }}</span>{{ __(' Availibility') }}

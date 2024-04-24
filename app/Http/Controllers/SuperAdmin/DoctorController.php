@@ -76,24 +76,25 @@ class DoctorController extends Controller
      */
     public function store(Request $request)
     {
+        // name email 'treatment_id' 'category_id' 'phone' 'expertise_id 'hospital_id'
         $request->validate([
             'name' => 'bail|required|unique:doctor',
             'email' => 'bail|required|email|unique:users',
             'treatment_id' => 'bail|required',
             'category_id' => 'bail|required',
-            'dob' => 'bail|required',
-            'gender' => 'bail|required',
+            'dob' => 'nullable',
+            'gender' => 'nullable',
             'phone' => 'bail|required|digits_between:6,12',
             'expertise_id' => 'bail|required',
-            'timeslot' => 'bail|required',
-            'start_time' => 'bail|required',
-            'end_time' => 'bail|required|after:start_time',
+            'timeslot' => 'nullable',
+            'start_time' => 'nullable',
+            'end_time' => 'bail|nullable|after:start_time',
             'hospital_id' => 'bail|required',
-            'desc' => 'required',
-            'appointment_fees' => 'required|numeric',
-            'experience' => 'bail|required|numeric',
+            'desc' => 'nullable',
+            'appointment_fees' => 'nullable|numeric',
+            'experience' => 'nullable|numeric',
             'custom_timeslot' => 'bail|required_if:timeslot,other',
-            'commission_amount' => 'bail|required_if:based_on,commission'
+            'commission_amount' => 'bail|nullable'
         ]);
         $data = $request->all();
         $password = mt_rand(100000,999999);
