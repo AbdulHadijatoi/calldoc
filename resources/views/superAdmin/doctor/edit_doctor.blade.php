@@ -39,7 +39,7 @@
                     <div class="col-lg-10 col-md-8">
                         <div class="form-group">
                             <label class="col-form-label">{{__('Name')}}</label>
-                            <input type="text" value="{{ old('name',$doctor->name )}}" name="name" class="form-control @error('name') is-invalid @enderror">
+                            <input type="text" value="{{ old('name',$doctor->name )}}" name="name" class="form-control @error('name') is-invalid @enderror" required>
                             @error('name')
                             <div class="invalid-feedback">
                                 {{ $message }}
@@ -49,7 +49,7 @@
 
                         <label class="col-form-label">{{__('email')}}</label>
                         <div class="form-group">
-                            <input type="email" readonly value="{{ $doctor->user['email'] }}" name="email" class="form-control @error('email') is-invalid @enderror">
+                            <input type="email" readonly value="{{ $doctor->user['email'] }}" name="email" class="form-control @error('email') is-invalid @enderror" required>
                             @error('email')
                             <div class="invalid-feedback">
                                 {{ $message }}
@@ -69,7 +69,7 @@
                                     <option value="+{{$country->phonecode}}" {{ $doctor->user['phone_code'] == +$country->phonecode ? 'selected' : '' }}>+{{ $country->phonecode }}</option>
                                 @endforeach
                             </select>
-                            <input type="number" min="1" readonly value="{{old('phone',$doctor->user['phone'])}}" name="phone" class="form-control @error('phone') is-invalid @enderror">
+                            <input type="number" min="1" readonly value="{{old('phone',$doctor->user['phone'])}}" name="phone" required class="form-control @error('phone') is-invalid @enderror">
                         </div>
                         @error('phone')
                         <div class="invalid-feedback">
@@ -148,19 +148,19 @@
                                                 <div class="col-12 col-md-6 col-lg-4">
                                                     <div class="form-group">
                                                         <label>{{__('Degree')}}</label>
-                                                        <input type="text" value="{{ $education->degree }}" required name="degree[]" class="form-control">
+                                                        <input type="text" value="{{ $education->degree }}" name="degree[]" class="form-control">
                                                     </div>
                                                 </div>
                                                 <div class="col-12 col-md-6 col-lg-4">
                                                     <div class="form-group">
                                                         <label>{{__('College/Institute')}}</label>
-                                                        <input type="text" value="{{ $education->college }}" required name="college[]" class="form-control">
+                                                        <input type="text" value="{{ $education->college }}" name="college[]" class="form-control">
                                                     </div>
                                                 </div>
                                                 <div class="col-12 col-md-6 col-lg-4">
                                                     <div class="form-group">
                                                         <label>{{__('Year of Completion')}}</label>
-                                                        <input type="text" maxlength="4" value="{{ $education->year }}" pattern="^[0-9]{4}$" required name="year[]" class="form-control">
+                                                        <input type="text" maxlength="4" value="{{ $education->year }}" pattern="^[0-9]{4}$" name="year[]" class="form-control">
                                                     </div>
                                                 </div>
                                             </div>
@@ -182,19 +182,19 @@
                                         <div class="col-12 col-md-6 col-lg-4">
                                             <div class="form-group">
                                                 <label>{{__('Degree')}}</label>
-                                                <input type="text" required name="degree[]" class="form-control">
+                                                <input type="text" name="degree[]" class="form-control">
                                             </div>
                                         </div>
                                         <div class="col-12 col-md-6 col-lg-4">
                                             <div class="form-group">
                                                 <label>{{__('College/Institute')}}</label>
-                                                <input type="text" required name="college[]" class="form-control">
+                                                <input type="text" name="college[]" class="form-control">
                                             </div>
                                         </div>
                                         <div class="col-12 col-md-6 col-lg-4">
                                             <div class="form-group">
                                                 <label>{{__('Year of Completion')}}</label>
-                                                <input type="text" maxlength="4" pattern="^[0-9]{4}$" required name="year[]" class="form-control">
+                                                <input type="text" maxlength="4" pattern="^[0-9]{4}$" name="year[]" class="form-control">
                                             </div>
                                         </div>
                                     </div>
@@ -217,13 +217,13 @@
                                         <div class="col-12 col-md-5">
                                             <div class="form-group">
                                                 <label>{{__('certificate')}}</label>
-                                                <input type="text" value="{{ $certificate->certificate }}" required name="certificate[]" class="form-control">
+                                                <input type="text" value="{{ $certificate->certificate }}" name="certificate[]" class="form-control">
                                             </div>
                                         </div>
                                         <div class="col-12 col-md-5">
                                             <div class="form-group">
                                                 <label>{{__('Year')}}</label>
-                                                <input type="text" required value="{{ $certificate->certificate_year }}" name="certificate_year[]" maxlength="4" pattern="^[0-9]{4}$" class="form-control">
+                                                <input type="text" value="{{ $certificate->certificate_year }}" name="certificate_year[]" maxlength="4" pattern="^[0-9]{4}$" class="form-control">
                                             </div>
                                         </div>
                                         @if ($loop->iteration != 1)
@@ -239,13 +239,13 @@
                                     <div class="col-12 col-md-5">
                                         <div class="form-group">
                                             <label>{{__('certificate')}}</label>
-                                            <input type="text" required name="certificate[]" class="form-control">
+                                            <input type="text" name="certificate[]" class="form-control">
                                         </div>
                                     </div>
                                     <div class="col-12 col-md-5">
                                         <div class="form-group">
                                             <label>{{__('Year')}}</label>
-                                            <input type="text" required name="certificate_year[]" maxlength="4" pattern="^[0-9]{4}$" class="form-control">
+                                            <input type="text" name="certificate_year[]" maxlength="4" pattern="^[0-9]{4}$" class="form-control">
                                         </div>
                                     </div>
                                 </div>
@@ -371,7 +371,7 @@
                     </div>
                     <div class="col-lg-6 form-group base_on_com {{ $doctor->based_on != 'commission' ? 'hide' : '' }}">
                         <label class="col-form-group">{{__('Commission Amount ( pr appointment ) ( in % )')}}</label>
-                        <input type="text" step="any" name="commission_amount" {{ $doctor->based_on == 'commission_amount' ? 'required' : '' }} value="{{ old('commission_amount', $doctor->commission_amount) }}" class="form-control base_on_com_text @error('commission_amount') is-invalid @enderror">
+                        <input type="text" step="any" name="commission_amount" value="{{ old('commission_amount', $doctor->commission_amount) }}" class="form-control base_on_com_text @error('commission_amount') is-invalid @enderror">
                         @error('commission_amount')
                             <div class="invalid-feedback">
                                 {{ $message }}

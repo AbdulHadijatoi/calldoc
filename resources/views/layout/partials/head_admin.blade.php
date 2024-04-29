@@ -54,3 +54,12 @@
         --primary_color_hover : <?php echo $color.'cc' ?>;
     }
 </style>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-DL5DB58HC1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-DL5DB58HC1');
+</script>

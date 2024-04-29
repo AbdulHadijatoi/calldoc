@@ -206,7 +206,7 @@ class DoctorApiController extends Controller
         $data['status'] = 1;
         $start_time = strtolower('08:00 am');
         $end_time = strtolower('08:00 pm');
-        $days = array('Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday');
+        $days = array('Dimanche','Lundi','Mardi','mercredi','Jeudi','Vendredi','Samedi');
         for($i = 0; $i < count($days); $i++)
         {
             $master = array();

@@ -24,7 +24,10 @@ class MedicineController extends Controller
     {
         abort_if(Gate::denies('medicine_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
         $pharmacy = Pharmacy::where('user_id',auth()->user()->id)->first();
-        $medicines = Medicine::where('pharmacy_id',$pharmacy->id)->orderBy('id','DESC')->get();
+        $medicines = null;
+        if($pharmacy){
+            $medicines = Medicine::where('pharmacy_id',$pharmacy->id)->orderBy('id','DESC')->get();
+        }
         $currency = Setting::first()->currency_symbol;
         return view('pharmacyAdmin.medicine.medicine',compact('medicines','currency'));
     }

@@ -31,3 +31,12 @@
 @if (session('direction') == 'rtl')
     <link rel="stylesheet" href="{{ url('assets/css/rtl_direction.css')}}" type="text/css">
 @endif
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-DL5DB58HC1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-DL5DB58HC1');
+</script>

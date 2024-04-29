@@ -47,7 +47,7 @@ class AppointmentReminder
      */
     private function _sendMessage($appointment)
     {
-        Log::info('AppointmentsWithin24Hours Sending notification for appointment',[$appointment]); // Log message
+        Log::info('AppointmentReminder:_sendMessage() sending appointment reminder',[$appointment]); // Log message
         // TOMORROW APPOINTMENT TO PATIENT
         $user = $appointment->user;
         $doctor = $appointment->doctor;

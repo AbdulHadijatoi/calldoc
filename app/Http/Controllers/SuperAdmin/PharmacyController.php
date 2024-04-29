@@ -124,7 +124,7 @@ class PharmacyController extends Controller
         $pharmacy = Pharmacy::create($data);
         $start_time = strtolower($pharmacy->start_time);
         $end_time = strtolower($pharmacy->end_time);
-        $days = array('Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday');
+        $days = array('Dimanche','Lundi','Mardi','mercredi','Jeudi','Vendredi','Samedi');
         for($i = 0; $i < count($days); $i++)
         {
             $master = array();

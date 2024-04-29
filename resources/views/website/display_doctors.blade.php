@@ -46,9 +46,9 @@ $data = $doctors;
                             @endif
                             @endforeach
                     </div>
-                    <h1 class="font-fira-sans font-semibold text-2xl text-primary leading-7 pt-5 xmd:pt-2 sm:pt-1 mb-5">
+                    {{-- <h1 class="font-fira-sans font-semibold text-2xl text-primary leading-7 pt-5 xmd:pt-2 sm:pt-1 mb-5">
                         <span class="font-light">{{ $currency }}</span> {{ $doctor['appointment_fees'] }}
-                    </h1>
+                    </h1> --}}
                     <div class="flex xl:flex-row xlg:flex-row lg:flex-row xsm:flex-row xxsm:flex-col items-center">
                         <a href="{{ url('booking/'.$doctor['id'].'/'.Str::slug($doctor['name'])) }}" class="font-fira-sans text-white bg-primary hover:bg-primary text-sm text-center py-2.5 px-5">{{__('Make Appointment')}}</a>
                         <a href="{{ url('doctor-profile/'.$doctor['id'].'/'.Str::slug($doctor['name'])) }}" class="font-fira-sans text-primary text-sm font-normal leading-4 underline py-2 ml-3">{{__('View Profile')}}</a>

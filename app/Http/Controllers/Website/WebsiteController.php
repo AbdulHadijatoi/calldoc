@@ -49,6 +49,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
 use Spatie\Permission\Models\Role;
 
@@ -692,21 +693,22 @@ class WebsiteController extends Controller
         $data = $request->all();
 
         $request->validate([
-            'appointment_for' => 'bail|required',
-            'illness_information' => 'bail|required',
+            'appointment_for' => 'nullable',
+            'illness_information' => 'nullable',
             'patient_name' => 'bail|required',
             'age' => 'bail|required|numeric',
             'patient_address' => 'bail|required',
             'phone_no' => 'bail|required|numeric',
-            'drug_effect' => 'bail|required',
-            'note' => 'bail|required',
-            'date' => 'bail|required',
-            'time' => 'bail|required',
-            'hospital_id' => 'bail|required',
-            'time' => 'bail|required|date_format:h:i a',
-            'policy_insurer_name' => 'bail|required_if:is_insured,1',
-            'policy_number' => 'bail|required_if:is_insured,1'
+            'drug_effect' => 'nullable',
+            'note' => 'nullable',
+            'date' => 'nullable',
+            'time' => 'nullable',
+            'hospital_id' => 'nullable',
+            'time' => 'nullable',
+            'policy_insurer_name' => 'nullable',
+            'policy_number' => 'nullable'
         ]);
+        
         $data['appointment_id'] =  '#' . rand(100000, 999999);
         $data['user_id'] = auth()->user()->id;
         $data['appointment_status'] = 'pending';
@@ -731,6 +733,9 @@ class WebsiteController extends Controller
         $data = array_filter($data, function ($a) {
             return $a !== "";
         });
+        if (!preg_match('/^\+?212/', $request->phone_no)) {
+            $data['phone_no'] = '+212' . ltrim($request->phone_no, '0');
+        }
         $appointment = Appointment::create($data);
 
         return response(['success' => true]);
@@ -793,33 +798,6 @@ class WebsiteController extends Controller
         $timeslots = (new CustomController)->timeSlot($request->doctor_id, $request->date);
         return response(['success' => true, 'data' => $timeslots, 'date' => Carbon::parse($request->date)->format('d M')]);
     }
-
-    public function medicinesListing(Request $request)
-    {
-        $data = $request->all();
-        
-        // Query medicines with status = 1 (active)
-        $medicinesQuery = Medicine::where('status', 1);
-
-        // Apply search filter
-        if (isset($data['search_val']) && $data['search_val'] !== '') {
-            $medicinesQuery->where('name', 'LIKE', '%' . $data['search_val'] . '%');
-        }
-
-        // Get paginated data
-        $medicines = $medicinesQuery->paginate(10); // Adjust the pagination limit as required
-
-        // Check if the request is from AJAX
-        if (isset($data['from'])) {
-            $view = view('website.display_medicines_table', compact('medicines'))->render();
-            return response()->json(['html' => $view, 'success' => true]);
-        }
-
-        // Regular page view
-        return view('website.medicines', compact('medicines'));
-    }
-
-
 
     public function ourBlogs(Request $request)
     {
@@ -1354,6 +1332,16 @@ class WebsiteController extends Controller
         // CANCEL APPOINTMENT FROM PATIENT TO PATIENT
 
         if($user){
+            Log::info('WebsiteController:cancelAppointment() patient notification',[
+                $request->phone_no,'HX0ba3274473ee4eb9ca629b66ad636039',[
+                    "1" => $user->name,
+                    "2" => $appointment->date,
+                    "3" => $appointment->time,
+                    "4" => $appointment->doctor->name,
+                    "5" => $appointment->hospital ? $appointment->hospital->address??'-':'-',
+                    "6" => $doctor->user->phone_code . $doctor->user->phone,
+                ]
+            ]);
             $this->twilioService->sendContentTemplate($request->phone_no,'HX0ba3274473ee4eb9ca629b66ad636039',[
                 "1" => $user->name,
                 "2" => $appointment->date,
@@ -1365,6 +1353,15 @@ class WebsiteController extends Controller
         }
 
         // DOCTOR CANCEL NOTIFICATION FROM PATIENT
+        Log::info('WebsiteController:cancelAppointment() doctor notification',[
+            $doctor->user->phone,"HXead88f80fb049d0989ec955fb3d7651d", [
+                "1" => $doctor->name,
+                "2" => $appointment->appointment_id,
+                "3" => $appointment->date,
+                "4" => $appointment->time,
+                "5" => $user->name,
+            ]
+        ]);
         $this->twilioService->sendContentTemplate($doctor->user->phone,"HXead88f80fb049d0989ec955fb3d7651d", [
             "1" => $doctor->name,
             "2" => $appointment->appointment_id,
@@ -1389,6 +1386,7 @@ class WebsiteController extends Controller
             "4" => $appointment->time,
             "5" => $user->name,
         ]);
+
     }
 
     public function deleteAccount()

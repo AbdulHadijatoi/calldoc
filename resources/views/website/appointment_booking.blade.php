@@ -161,7 +161,7 @@
                         </div>
                         <div>
                             <label class="text-base font-normal font-fira-sans leading-5 pb-2" for="illness_information">{{__('Illness Information')}}</label>
-                            <input type="text" name="illness_information" class="block p-2 w-full text-sm bg-white-50 border font-normal font-fira-sans leading-5 !border-white-light mt-2" required>
+                            <input type="text" name="illness_information" class="block p-2 w-full text-sm bg-white-50 border font-normal font-fira-sans leading-5 !border-white-light mt-2">
                         </div>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8 mt-5">
@@ -171,7 +171,7 @@
                         </div>
                         <div>
                             <label class="text-base font-normal font-fira-sans leading-5 pb-2" for="patient_age">{{__('Patient Age')}}</label>
-                            <input type="number" min="1" name="age" class="block p-2 w-full text-sm bg-white-50 border font-normal font-fira-sans leading-5 !border-white-light mt-2" required>
+                            <input type="number" min="1" name="age" class="block p-2 w-full text-sm bg-white-50 border font-normal font-fira-sans leading-5 !border-white-light mt-2">
                         </div>
                         <div>
                             <label class="text-base font-normal font-fira-sans leading-5 pb-2" for="phone_number">{{__('Phone Number')}}</label>
@@ -197,11 +197,11 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 md:gap-6 lg:gap-8 mt-5">
                         <div>
                             <label class="text-base font-normal font-fira-sans leading-5 pb-2" for="drug_effect">{{__('Any Side Effects Of The Drug?')}}</label>
-                            <input name="drug_effect" type="text" id="search-dropdown" class="block p-2 w-full text-sm bg-white-50 border font-normal font-fira-sans leading-5 !border-white-light mt-2" required>
+                            <input name="drug_effect" type="text" id="search-dropdown" class="block p-2 w-full text-sm bg-white-50 border font-normal font-fira-sans leading-5 !border-white-light mt-2">
                         </div>
                         <div>
                             <label class="text-base font-normal font-fira-sans leading-5 pb-2" for="note">{{__('Any Note For Doctor ??')}}</label>
-                            <input name="note" type="text" id="search-dropdown" class="block p-2 w-full text-sm bg-white-50 border font-normal font-fira-sans leading-5 !border-white-light mt-2" required>
+                            <input name="note" type="text" id="search-dropdown" class="block p-2 w-full text-sm bg-white-50 border font-normal font-fira-sans leading-5 !border-white-light mt-2">
                         </div>
                     </div>
 

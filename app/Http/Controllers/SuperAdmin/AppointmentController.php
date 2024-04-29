@@ -28,6 +28,7 @@ use App\Models\WorkingHour;
 use App\Services\TwilioService;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
@@ -40,6 +41,22 @@ class AppointmentController extends Controller
         $this->twilioService = new TwilioService();
     }
     
+    public function sendTEST()
+    {
+        $this->twilioService->sendContentTemplate(
+            "665474270",
+            'HX64d3dea9dbf6ac1bb1095402ebe56d6d',
+            [
+                "1" => "Taha",
+                "2" => "2024-04-19",
+                "3" => "Doctor Taha",
+                "4" => "Doctor Address",
+                "5" => "2",
+            ]
+        );
+        return "SENT NOTIFICATION";
+    }
+
     public function calendar()
     {
         abort_if(Gate::denies('appointment_calendar_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
@@ -146,7 +163,17 @@ class AppointmentController extends Controller
             $lat = $hospital->lat;
             $long = $hospital->lng;
             $google_map_url = "https://www.google.com/maps?q=$lat,$long";
-            
+            Log::info('AppointmentController:acceptAppointment() patient notification',[
+                $user->phone,'HX98adc0156425cced35ee51de2285465a',[
+                    "1" => $user->name,
+                    "2" => $appointment->date,
+                    "3" => $appointment->time,
+                    "4" => $doctor->name,
+                    "5" => $hospitalAddress,
+                    "6" => $doctor->user->phone_code . $doctor->user->phone,
+                    "7" => $google_map_url,
+                ]
+            ]); // Log message
             $this->twilioService->sendContentTemplate($user->phone,'HX98adc0156425cced35ee51de2285465a',[
                 "1" => $user->name,
                 "2" => $appointment->date,
@@ -160,6 +187,16 @@ class AppointmentController extends Controller
 
         // ONLY WHEN ($appointment->is_from == 0) THEN SEND NOTIFICATION TO DOCTOR
         if($appointment->is_from == 0){
+            Log::info('AppointmentController:acceptAppointment() doctor notification',[
+                $doctor->user->phone,"HXb58ab4662e8c9824ff9dd50fa84b1dd7", [
+                    "1" => $doctor->name,
+                    "2" => $appointment->id,
+                    "3" => $appointment->date,
+                    "4" => $appointment->time,
+                    "5" => $user->name,
+                    "6" => $user->phone,
+                ]
+            ]); // Log message
             $this->twilioService->sendContentTemplate($doctor->user->phone,"HXb58ab4662e8c9824ff9dd50fa84b1dd7", [
                 "1" => $doctor->name,
                 "2" => $appointment->id,
@@ -183,6 +220,16 @@ class AppointmentController extends Controller
         $hospital = $appointment->hospital;
         $user = $appointment->user;
         if($hospital->address && $user){
+            Log::info('AppointmentController:cancelAppointment() cancel doctor notification',[
+                $user->phone,'HX0ba3274473ee4eb9ca629b66ad636039',[
+                    "1" => $user->name,
+                    "2" => $appointment->date,
+                    "3" => $appointment->time,
+                    "4" => $appointment->doctor->name,
+                    "5" => $hospital->address??"-",
+                    "6" => $doctor->user->phone_code . $doctor->user->phone,
+                ]
+            ]); // Log message
             $this->twilioService->sendContentTemplate($user->phone,'HX0ba3274473ee4eb9ca629b66ad636039',[
                 "1" => $user->name,
                 "2" => $appointment->date,
@@ -379,7 +426,7 @@ class AppointmentController extends Controller
             $recording = $request->file('recording');
             $file_name = 'recording_' . time() . '.' . $recording->getClientOriginalExtension();
             $recording->move(public_path('prescription/recordings'), $file_name);
-
+            
             $randomString = Str::random(50);
             $pres = Prescription::find($request->appointment_id);
             if($pres){
@@ -401,6 +448,15 @@ class AppointmentController extends Controller
             $hospital = $appointment->hospital;
             $hospitalAddress = $hospital?$hospital->address??null:null;
             if($hospitalAddress && $user){
+                Log::info('AppointmentController:cancelAppointment() cancel doctor notification',[
+                    $user->phone,'HX4d21db0c85b7cc4dbe7653c610a33f26',[
+                    "1" => $user->name,
+                    "2" => $appointment->date,
+                    "3" => $doctor->name,
+                    "4" => $hospitalAddress,
+                    "5" => url("prescription_recording/".$pres->id."/".$pres->key_code)
+                    ]
+                ]); // Log message
                 $this->twilioService->sendContentTemplate($user->phone,'HX4d21db0c85b7cc4dbe7653c610a33f26',[
                     "1" => $user->name,
                     "2" => $appointment->date,
@@ -489,11 +545,11 @@ class AppointmentController extends Controller
     {
         $data = $request->all();
         $request->validate([
-            'illness_information' => 'bail|required',
-            'age' => 'bail|required|numeric',
+            'illness_information' => 'nullable',
+            'age' => 'nullable|numeric',
             'patient_address' => 'bail|required',
-            'drug_effect' => 'bail|required',
-            'note' => 'bail|required',
+            'drug_effect' => 'nullable',
+            'note' => 'nullable',
             'date' => 'bail|required',
             'time' => 'bail|required',
             'hospital_id' => 'bail|required',
@@ -622,6 +678,19 @@ class AppointmentController extends Controller
             $lat = $hospital->lat;
             $long = $hospital->lng;
             $google_map_url = "https://www.google.com/maps?q=$lat,$long";
+
+            Log::info('AppointmentController:updateAppointment() update user notification',[
+                $user->phone,'HX9d3acc90ddfe9185394ac540873faac4',[
+                    "1" => $user->name,
+                    "2" => $appointment->date,
+                    "3" => $appointment->time,
+                    "4" => $doctor->name,
+                    "5" => $hospitalAddress,
+                    "6" => $doctor->user->phone_code . $doctor->user->phone,
+                    "7" => $google_map_url,
+                ]
+            ]); // Log message
+
             $this->twilioService->sendContentTemplate($user->phone,'HX9d3acc90ddfe9185394ac540873faac4',[
                 "1" => $user->name,
                 "2" => $appointment->date,

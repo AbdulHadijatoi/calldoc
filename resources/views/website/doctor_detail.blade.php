@@ -55,9 +55,11 @@
             </div>
             <div class="bg-white-50 2xl:w-96 xl:w-80 xlg:w-72 xl:h-80 xlg:h-80 lg:h-80 lg:w-64 xmd:w-52 xmd:h-72 md:w-full md:h-72 sm:w-full sm:h-72 msm:w-96 msm:h-72 xsm:w-full xsm:h-72 xxsm:w-full xxsm:h-40">
                 <div class="flex flex-col items-end 2xl:mt-10 xl:mt-10 xlg:mt-10  lg:mt-10 xmd:mt-8 md:mt-8 sm:mt-11 msm:mt-8 xsm:mt-0 xxsm:mt-0">
-                    <h1 class="font-fira-sans font-semibold text-xl text-primary leading-7 pt-5 xmd:pt-2 sm:pt-1 2xl:mx-11 xl:mx11 xl:mx-11 lg:mx-11 xmd:mx-11 md:mx-11 sm:mx-10 msm:mx-2 xsm:mx-5 xxsm:mx-5">
-                        {{ $currency }}{{ $doctor->appointment_fees }}
-                    </h1>
+                    @if(false && $doctor->appointment_fees)
+                        <h1 class="font-fira-sans font-semibold text-xl text-primary leading-7 pt-5 xmd:pt-2 sm:pt-1 2xl:mx-11 xl:mx11 xl:mx-11 lg:mx-11 xmd:mx-11 md:mx-11 sm:mx-10 msm:mx-2 xsm:mx-5 xxsm:mx-5">
+                            {{ $currency }}{{ $doctor->appointment_fees }}
+                        </h1>
+                    @endif
 
                     <div class="2xl:mx-11 xl:mx-11 xlg:mx-11 lg:mx-11 xmd:mx-11 md:mx-10 sm:mx-10 msm:mx-2 xsm:mx-5 xxsm:mx-5 2xl:mt-40 xl:mt-40 xlg:mt-40 lg:mt-40 xmd:mt-40 md:mt-40 sm:mt-40 msm:mt-10 xsm:mt-5 xxsm:mt-10">
                         <a href="javascript:void(0)" class="text-primary add-favourite" data-id="{{ $doctor['id'] }}"><i class="{{ $doctor['is_fav'] == 'true' ? 'fa fa-bookmark' : 'fa-regular fa-bookmark' }} border border-primary 2xl:p-2 xl:p-2 xlg:p-2 lg:p-2 xmd:p-1 xxsm:p-2"></i></a>
@@ -82,42 +84,48 @@
         <div class="flex 2xl:flex-row xl:flex-row xlg:flex-row lg:flex-row xmd:flex-row md:row sm:flex-col  sms:flex-col  xsm:flex-col  xxsm:flex-col">
             {{-- first part --}}
             <div class="lg:w-[70%] xmd:w-[60%]  border-r border-white-light">
-                <div class="border-b border-white-light  pb-6 pt-6">
-                    <h1 class="text-xl font-normal leading-6 font-fira-sans text-black pb-4">{{__('Overview')}}</h1>
-                    <p class="leading-4 font-fira-sans font-normal text-sm text-gray">{{ $doctor->desc }}</p>
-                </div>
-                <div class="border-b border-white-light pb-6">
-                    <h1 class="text-xl font-medium leading-6 font-fira-sans text-black pt-6">{{__('Education')}}</h1>
-                    @foreach (json_decode($doctor->education) as $education)
-                    <div class="flex pt-4">
-                        <div>
-                            <img src="{{asset('assets/image/Education.png')}}" class="" alt="">
-                        </div>
-                        <div class="mx-5">
-                            <h1 class="font-normal text-sm font-fira-sans leading-4">{{ $education->college }}</h1>
-                            <p class="font-fira-sans font-normal leading-3 text-xs text-gray py-1">{{ $education->degree }}
-                            </p>
-                            <p class="font-fira-sans font-normal leading-3 text-xs text-gray">{{ $education->year }}</p>
-                        </div>
+                @if($doctor->desc)
+                    <div class="border-b border-white-light  pb-6 pt-6">
+                        <h1 class="text-xl font-normal leading-6 font-fira-sans text-black pb-4">{{__('Overview')}}</h1>
+                        <p class="leading-4 font-fira-sans font-normal text-sm text-gray">{{ $doctor->desc }}</p>
                     </div>
-                    @endforeach
-                </div>
+                @endif
+                @if($doctor->education)
+                    <div class="border-b border-white-light pb-6">
+                        <h1 class="text-xl font-medium leading-6 font-fira-sans text-black pt-6">{{__('Education')}}</h1>
+                        @foreach (json_decode($doctor->education) as $education)
+                        <div class="flex pt-4">
+                            <div>
+                                <img src="{{asset('assets/image/Education.png')}}" class="" alt="">
+                            </div>
+                            <div class="mx-5">
+                                <h1 class="font-normal text-sm font-fira-sans leading-4">{{ $education->college }}</h1>
+                                <p class="font-fira-sans font-normal leading-3 text-xs text-gray py-1">{{ $education->degree }}
+                                </p>
+                                <p class="font-fira-sans font-normal leading-3 text-xs text-gray">{{ $education->year }}</p>
+                            </div>
+                        </div>
+                        @endforeach
+                    </div>
+                @endif
 
-                <div class="border-b border-white-light pb-14">
-                    <h1 class="text-xl font-medium leading-6 font-fira-sans text-black pt-6">{{__('Certificate')}}</h1>
-                    @foreach (json_decode($doctor->certificate) as $certificate)
-                    <div class="flex pt-4">
-                        <div>
-                            <img src="{{asset('assets/image/Experience.png')}}" class="" alt="">
+                @if($doctor->certificate && !empty(json_decode($doctor->certificate)[0]->certificate))
+                    <div class="border-b border-white-light pb-14">
+                        <h1 class="text-xl font-medium leading-6 font-fira-sans text-black pt-6">{{__('Certificate')}}</h1>
+                        @foreach (json_decode($doctor->certificate) as $certificate)
+                        <div class="flex pt-4">
+                            <div>
+                                <img src="{{asset('assets/image/Experience.png')}}" class="" alt="">
+                            </div>
+                            <div class="mx-5">
+                                <h1 class="font-normal text-sm font-fira-sans leading-4">{{ $certificate->certificate }}</h1>
+                                <p class="font-fira-sans font-normal leading-3 text-xs text-gray py-1">{{
+                                $certificate->certificate_year }}</p>
+                            </div>
                         </div>
-                        <div class="mx-5">
-                            <h1 class="font-normal text-sm font-fira-sans leading-4">{{ $certificate->certificate }}</h1>
-                            <p class="font-fira-sans font-normal leading-3 text-xs text-gray py-1">{{
-                            $certificate->certificate_year }}</p>
-                        </div>
+                        @endforeach
                     </div>
-                    @endforeach
-                </div>
+                @endif
             </div>
 
             {{-- second part --}}
@@ -163,15 +171,14 @@
                                 @endforeach
                             </div>
                             <div class="xlg:pt-2">
-                                <a href="javascipt:void(0)" class="text-white {{ $today == 1 ? 'bg-primary' : 'bg-red'  }} text-center py-2 px-2 text-xs font-normal leading-3 font-fira-sans rounded-full">{{$today == 1 ? 'Open Now' : 'Closed' }}</a>
+                                <a href="javascipt:void(0)" class="text-white {{ $today == 1 ? 'bg-primary' : 'bg-red'  }} text-center py-2 px-2 text-xs font-normal leading-3 font-fira-sans rounded-full">{{$today == 1 ? __('Open Now') : __('Closed') }}</a>
                             </div>
                         </div>
 
                         <div class="">
                             @foreach ($doctor->workHour as $workHour)
                             <div class="flex justify-between pt-5 flex-row">
-                                <h1 class="font-fira-sans text-left text-sm font-medium text-black">{{ $workHour->day_index
-                                }}</h1>
+                                <h1 class="font-fira-sans text-left text-sm font-medium text-black">{{ __($workHour->day_index)}}</h1>
                                 <div class="w-36">
                                     @foreach (json_decode($workHour['period_list']) as $period_list)
                                     @if ($workHour->status)
@@ -196,32 +203,34 @@
         {{-- second div --}}
         <div class="flex pb-14 2xl:mx-0 xl:mx-16 xlg:mx-0 lg:mx-0 xmd:mx-0 md:mx-5 2xl:flex-row xl:flex-row xlg:flex-row lg:flex-row xmd:flex-row md:row sm:flex-col sm:mx-5 sms:flex-col msm:mx-0 xsm:flex-col xsm:mx-0 xxsm:flex-col xxsm:mx-0">
             {{-- first part --}}
-            <div class="w-1/2 border-b border-white-light md:w-full sm:w-full msm:w-full xsm:w-full xxsm:w-full">
-                <h1 class="font-fira-sans font-normal text-xl leading-5 pt-10 pb-6">{{__('Locations')}}</h1>
-                <div class="mr-10 space-y-5 ">
-                    @foreach ($doctor->hospital as $hospital)
-                    <div class="border-b border-white-light">
-                        <h1 class="font-fira-sans text-base font-medium leading-5">{{ $hospital->name }}</h1>
-                        <p class="font-fira-sans font-normal text-sm text-gray leading-5 py- mt-2">{{ $hospital->facility }}</p>
-                        <p class="font-fira-sans font-normal text-sm text-black leading-5 py-1 mt-2 mb-2.5"><i class="fa-solid fa-location-dot"></i> {{ $hospital->address }}</p>
-                        @php
-                        $url = 'https://www.google.com/maps/dir/?api=1&destination='.$hospital->lat.','.$hospital->lng;
-                        @endphp
+            @if($doctor->hospital)
+                <div class="w-1/2 border-b border-white-light md:w-full sm:w-full msm:w-full xsm:w-full xxsm:w-full">
+                    <h1 class="font-fira-sans font-normal text-xl leading-5 pt-10 pb-6">{{__('Locations')}}</h1>
+                    <div class="mr-10 space-y-5 ">
+                        @foreach ($doctor->hospital as $hospital)
+                        <div class="border-b border-white-light">
+                            <h1 class="font-fira-sans text-base font-medium leading-5">{{ $hospital->name }}</h1>
+                            <p class="font-fira-sans font-normal text-sm text-gray leading-5 py- mt-2">{{ $hospital->facility }}</p>
+                            <p class="font-fira-sans font-normal text-sm text-black leading-5 py-1 mt-2 mb-2.5"><i class="fa-solid fa-location-dot"></i> {{ $hospital->address }}</p>
+                            @php
+                            $url = 'https://www.google.com/maps/dir/?api=1&destination='.$hospital->lat.','.$hospital->lng;
+                            @endphp
 
-                        <a href="{{ $url }}" target="_blank" class="font-fira-sans text-sm font-medium text-primary leading-5 py-2">{{__('Get
-                        Directions')}}</a>
+                            <a href="{{ $url }}" target="_blank" class="font-fira-sans text-sm font-medium text-primary leading-5 py-2">{{__('Get
+                            Directions')}}</a>
 
-                        <div class="flex space-x-1 mb-5">
-                            @foreach ($hospital->hospital_gallery as $gallery)
-                            <a href="{{ $gallery->full_image }}" data-fancybox="gallery2">
-                                <img src="{{ $gallery->full_image }}" class="w-10 h-10 rounded" alt="">
-                            </a>
-                            @endforeach
+                            <div class="flex space-x-1 mb-5">
+                                @foreach ($hospital->hospital_gallery as $gallery)
+                                <a href="{{ $gallery->full_image }}" data-fancybox="gallery2">
+                                    <img src="{{ $gallery->full_image }}" class="w-10 h-10 rounded" alt="">
+                                </a>
+                                @endforeach
+                            </div>
                         </div>
+                        @endforeach
                     </div>
-                    @endforeach
                 </div>
-            </div>
+            @endif
 
             {{-- second part --}}
             <div class="w-1/2  border-l border-white-light md:w-full sm:w-full msm:w-full xxsm:w-full">
